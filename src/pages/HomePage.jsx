@@ -1,10 +1,12 @@
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
-import { StaggerList, fadeUpItem, spring, WordReveal, ScrollReveal } from "../components/animations"
+import { StaggerList, fadeUpItem, spring, WordReveal, ScrollReveal, Skeleton } from "../components/animations"
 import RestaurantCard from "../components/RestaurantCard"
 import SkeletonLoader from "../components/SkeletonLoader"
 import { formatDistance } from "../lib/health"
+
+const RestaurantMap = lazy(() => import("../components/RestaurantMap"))
 
 export default function HomePage() {
   const navigate = useNavigate()
@@ -13,6 +15,8 @@ export default function HomePage() {
   const [error, setError] = useState(null)
   const [search, setSearch] = useState("")
   const [sortBy, setSortBy] = useState("distance") // distance | name | cuisine
+  const [view, setView] = useState("list") // list | map
+  const [userCoords, setUserCoords] = useState(null)
 
   useEffect(() => {
     const storedStatus = sessionStorage.getItem("nutriq_location_status")
@@ -29,6 +33,8 @@ export default function HomePage() {
       try {
         const stored = sessionStorage.getItem("nutriq_restaurants")
         if (stored) setRestaurants(JSON.parse(stored))
+        const storedCoords = sessionStorage.getItem("nutriq_coords")
+        if (storedCoords) setUserCoords(JSON.parse(storedCoords))
       } catch {}
     }
 
@@ -192,6 +198,25 @@ export default function HomePage() {
             >
               ↻ Rescan
             </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={spring.snappy}
+              onClick={() => setView(view === "list" ? "map" : "list")}
+              style={{
+                padding: "6px 14px",
+                borderRadius: 8,
+                border: "1px solid var(--border)",
+                background: view === "map" ? "var(--red)" : "var(--surface)",
+                color: view === "map" ? "#fff" : "var(--cream-dim)",
+                fontSize: 12,
+                fontWeight: 600,
+                fontFamily: "var(--font-body)",
+                cursor: "pointer",
+              }}
+            >
+              {view === "list" ? "🗺️ Map" : "☰ List"}
+            </motion.button>
           </div>
         </ScrollReveal>
       )}
@@ -246,8 +271,21 @@ export default function HomePage() {
       {/* Loading state */}
       {status === "loading" && <SkeletonLoader count={5} />}
 
+      {/* Map view */}
+      {status === "located" && view === "map" && restaurants.length > 0 && (
+        <Suspense fallback={<Skeleton height={380} borderRadius={16} />}>
+          <div style={{ marginBottom: 16 }}>
+            <RestaurantMap
+              restaurants={displayedRestaurants}
+              userCoords={userCoords}
+              onSelect={handleCardClick}
+            />
+          </div>
+        </Suspense>
+      )}
+
       {/* Restaurant list */}
-      {status === "located" && restaurants.length > 0 && displayedRestaurants.length > 0 && (
+      {status === "located" && view === "list" && restaurants.length > 0 && displayedRestaurants.length > 0 && (
         <StaggerList
           className="restaurant-list"
           style={{ display: "flex", flexDirection: "column", gap: 10 }}
@@ -264,7 +302,7 @@ export default function HomePage() {
         </StaggerList>
       )}
 
-      {status === "located" && restaurants.length > 0 && displayedRestaurants.length === 0 && (
+      {status === "located" && view === "list" && restaurants.length > 0 && displayedRestaurants.length === 0 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

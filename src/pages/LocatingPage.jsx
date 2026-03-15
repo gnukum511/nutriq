@@ -7,7 +7,7 @@ import { useLocation } from "../hooks/useLocation"
 
 export default function LocatingPage() {
   const navigate = useNavigate()
-  const { status, restaurants, error } = useLocation()
+  const { status, coords, restaurants, error } = useLocation()
 
   useEffect(() => {
     if (status === "located" || status === "denied" || status === "error") {
@@ -15,13 +15,16 @@ export default function LocatingPage() {
       if (restaurants.length > 0) {
         sessionStorage.setItem("nutriq_restaurants", JSON.stringify(restaurants))
       }
+      if (coords) {
+        sessionStorage.setItem("nutriq_coords", JSON.stringify(coords))
+      }
       if (error) {
         sessionStorage.setItem("nutriq_location_error", error)
       }
       sessionStorage.setItem("nutriq_location_status", status)
       navigate("/", { replace: true })
     }
-  }, [status, restaurants, error, navigate])
+  }, [status, coords, restaurants, error, navigate])
 
   return (
     <div
