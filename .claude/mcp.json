@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "framer": {
+      "command": "npx",
+      "args": ["@framer/mcp-server"],
+      "env": {
+        "FRAMER_API_KEY": "YOUR_FRAMER_API_KEY_HERE"
+      }
+    }
+  }
+}

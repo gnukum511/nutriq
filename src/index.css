@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --red: #D91429;
+  --red-glow: rgba(217, 20, 41, 0.12);
+  --gold: #C99400;
+  --gold-dim: rgba(201, 148, 0, 0.1);
+  --orange: #E8581F;
+  --orange-dim: rgba(232, 88, 31, 0.1);
+  --green: #1BA34D;
+  --green-dim: rgba(27, 163, 77, 0.08);
+  --charcoal: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface2: #F5F4F1;
+  --surface3: #ECEAE6;
+  --border: rgba(0, 0, 0, 0.08);
+  --cream: #1A1A1A;
+  --cream-dim: rgba(26, 26, 26, 0.55);
+  --muted: rgba(26, 26, 26, 0.3);
+  --font-display: "Playfair Display", serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--charcoal);
+  color: var(--cream);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--charcoal);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface3);
+  border-radius: 3px;
+}
+
+::selection {
+  background: var(--red-glow);
+  color: var(--red);
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .restaurant-list {
+    gap: 8px !important;
+  }
+}
+
+/* Hide scrollbar on horizontal scroll containers */
+[style*="overflowX: auto"]::-webkit-scrollbar,
+[style*="overflow-x: auto"]::-webkit-scrollbar {
+  display: none;
+}
