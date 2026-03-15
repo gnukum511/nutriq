@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion"
 import { PageTransition, Skeleton } from "./components/animations"
 import Header from "./components/Header"
 import SidePanel from "./components/SidePanel"
+import Onboarding from "./components/Onboarding"
 import LocatingPage from "./pages/LocatingPage"
 
 const HomePage = lazy(() => import("./pages/HomePage"))
@@ -31,6 +32,9 @@ function PageLoader() {
 export default function App() {
   const location = useLocation()
   const [sideOpen, setSideOpen] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(
+    () => !localStorage.getItem("nutriq_onboarded")
+  )
   const isLocating = location.pathname === "/locating"
 
   useEffect(() => {
@@ -42,6 +46,10 @@ export default function App() {
   useEffect(() => {
     setSideOpen(false)
   }, [location.pathname])
+
+  if (showOnboarding) {
+    return <Onboarding onComplete={() => setShowOnboarding(false)} />
+  }
 
   return (
     <>
