@@ -87,6 +87,7 @@ export function formatDistance(km) {
  * Check if an item matches a filter
  */
 export function matchesFilter(item, filter) {
+  const tags = item.tags || []
   switch (filter) {
     case "highProtein":
       return item.protein >= 30
@@ -98,6 +99,16 @@ export function matchesFilter(item, filter) {
       const score = healthScore(item)
       return score >= 60
     }
+    case "keto":
+      return tags.includes("keto") || (item.carbs <= 15 && item.fat >= 20)
+    case "glutenFree":
+      return tags.includes("gluten-free")
+    case "paleo":
+      return tags.includes("paleo")
+    case "vegan":
+      return tags.includes("vegan")
+    case "allergyFriendly":
+      return tags.includes("nut-free") && tags.includes("dairy-free") && tags.includes("shellfish-free")
     default:
       return true
   }

@@ -86,6 +86,28 @@ export default function MenuItemCard({ item, index, selected, onToggle }) {
           <MacroPill type="carbs" value={item.carbs} />
           <MacroPill type="fat" value={item.fat} />
         </div>
+
+        {/* Dietary tags */}
+        {item.tags && item.tags.length > 0 && (
+          <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 6 }}>
+            {item.tags.map((tag) => (
+              <span
+                key={tag}
+                style={{
+                  padding: "2px 8px",
+                  borderRadius: 6,
+                  background: "var(--green-dim)",
+                  color: "var(--green)",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  fontFamily: "var(--font-body)",
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </motion.div>
   )

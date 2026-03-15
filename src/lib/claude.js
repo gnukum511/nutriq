@@ -107,8 +107,13 @@ Return a JSON array of 8-12 items. Each item:
   "protein": 32,
   "carbs": 28,
   "fat": 18,
-  "cat": "Category"
+  "cat": "Category",
+  "tags": ["vegan", "gluten-free"]
 }
+
+Tags should be an array of applicable dietary labels from this list ONLY:
+"keto", "gluten-free", "paleo", "vegan", "vegetarian", "dairy-free", "nut-free", "shellfish-free"
+Only include tags that genuinely apply to the dish. An empty array is fine.
 
 Categories should be relevant to the cuisine (e.g., Mains, Starters, Salads, Sides, Desserts, Brunch).
 Nutrition values should be realistic estimates.

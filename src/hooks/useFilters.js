@@ -13,6 +13,11 @@ export const FILTERS = [
   { key: "lowCalorie", label: "Low Calorie", emoji: "🔥" },
   { key: "lowCarb", label: "Low Carb", emoji: "🥬" },
   { key: "balanced", label: "Balanced", emoji: "⚖️" },
+  { key: "keto", label: "Keto", emoji: "🥑" },
+  { key: "glutenFree", label: "Gluten-Free", emoji: "🌾" },
+  { key: "paleo", label: "Paleo", emoji: "🍖" },
+  { key: "vegan", label: "Vegan", emoji: "🌱" },
+  { key: "allergyFriendly", label: "Allergy-Safe", emoji: "🛡️" },
 ]
 
 export function useFilters(items) {
