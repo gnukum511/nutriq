@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap } from "react-leaflet"
 import L from "leaflet"
 import { motion } from "framer-motion"
 import { spring } from "./animations"
@@ -98,6 +98,15 @@ export default function RestaurantMap({ restaurants, userCoords, onSelect }) {
               click: () => onSelect(r),
             }}
           >
+            <Tooltip
+              direction="top"
+              offset={[0, -36]}
+              opacity={0.95}
+            >
+              <span style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 13, fontWeight: 600 }}>
+                {r.emoji} {r.name}
+              </span>
+            </Tooltip>
             <Popup>
               <div style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
                 <strong style={{ fontSize: 14 }}>{r.emoji} {r.name}</strong>
