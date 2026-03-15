@@ -5,35 +5,38 @@
 - Purpose: Location-based restaurant menu health advisor with AI nutrition coaching
 - Stack: React 18 + Vite, Framer Motion, Tailwind CSS, Anthropic Claude API, Overpass API (OSM)
 - Fonts: Playfair Display (display/headings), Plus Jakarta Sans (body/UI)
+- Deployed: Vercel at https://nutriq-wine.vercel.app
+- Repo: https://github.com/gnukum511/nutriq
 
 ---
 
-## Color Token System (FOOD PSYCHOLOGY — DO NOT DEVIATE)
+## Color Token System (LIGHT THEME — Food Psychology Accents)
 ```
---red:         #E8192C   /* appetite trigger, urgency, primary CTAs, selected states */
---red-glow:    rgba(232,25,44,0.25)
---gold:        #F5B800   /* warmth, cravings, prices, AI coach highlights */
---gold-dim:    rgba(245,184,0,0.15)
---orange:      #FF6B2B   /* energy, comfort food, secondary CTAs, distance badges */
---orange-dim:  rgba(255,107,43,0.15)
---green:       #22C55E   /* HEALTH SIGNALS ONLY — freshness, trust, protein badges */
---green-dim:   rgba(34,197,94,0.12)
---charcoal:    #0E0E0F   /* primary background — makes food look richer */
---surface:     #161618
---surface2:    #1E1E21
---surface3:    #252528
---border:      rgba(255,255,255,0.07)
---cream:       #F5EDD8   /* primary text — warm, not cold white */
---cream-dim:   rgba(245,237,216,0.55)
---muted:       rgba(245,237,216,0.28)
+--red:         #D91429   /* appetite trigger, urgency, primary CTAs, selected states */
+--red-glow:    rgba(217,20,41,0.12)
+--gold:        #C99400   /* warmth, cravings, prices, AI coach highlights */
+--gold-dim:    rgba(201,148,0,0.1)
+--orange:      #E8581F   /* energy, comfort food, secondary CTAs, distance badges */
+--orange-dim:  rgba(232,88,31,0.1)
+--green:       #1BA34D   /* HEALTH SIGNALS ONLY — freshness, trust, protein badges */
+--green-dim:   rgba(27,163,77,0.08)
+--charcoal:    #FAFAF8   /* primary background — warm off-white */
+--surface:     #FFFFFF   /* card backgrounds */
+--surface2:    #F5F4F1   /* selected/hover states */
+--surface3:    #ECEAE6   /* scrollbar, dividers */
+--border:      rgba(0,0,0,0.08)
+--cream:       #1A1A1A   /* primary text — dark on light */
+--cream-dim:   rgba(26,26,26,0.55)
+--muted:       rgba(26,26,26,0.3)
 ```
 
 **Color rules:**
 - Red = action/urgency ONLY (order buttons, selected states, CTAs)
 - Gold = value/delight (prices, highlights, AI response labels)
 - Orange = secondary energy (badges, distance, supporting CTAs)
-- Green = health data ONLY — if it glows green, it's healthy. Reserve this strictly.
-- Never use purple, generic blue, or white backgrounds
+- Green = health data ONLY — if it's green, it's healthy. Reserve strictly.
+- Cards get subtle box-shadow for depth on light background
+- Never use purple, generic blue, or dark backgrounds
 
 ---
 
@@ -46,7 +49,7 @@
 - Health score rings: draw on mount with easeOut
 - Never use CSS `transition:` — always Framer Motion
 - Spring config standard: `{ type: "spring", stiffness: 300, damping: 24 }`
-- Spring config bouncy: `{ type: "spring", stiffness: 400, damping: 20 }`
+- Spring config bouncy: `{ type: "spring", stiffness: 420, damping: 20 }`
 
 ---
 
@@ -54,6 +57,7 @@
 ```
 src/
   components/
+    animations.jsx         — ALL animation exports (StaggerList, Pressable, etc.)
     RestaurantCard.jsx     — location list item, tap to open menu
     MenuItemCard.jsx       — individual dish with macro pills + health score ring
     ScoreRing.jsx          — SVG health score donut (0-100, color-coded)
@@ -66,14 +70,21 @@ src/
     LocationPin.jsx        — animated radar ping for locating screen
   hooks/
     useLocation.js         — geolocation + Overpass API fetch
-    useMenu.js             — AI menu generation via Claude API
+    useMenu.js             — AI menu generation via Claude API (session-cached)
     useAnalysis.js         — meal analysis via Claude API
     useFilters.js          — filter state + item matching logic
   lib/
-    overpass.js            — Overpass API queries + haversine distance
-    claude.js              — Claude API calls (generateMenu, analyzeMeal)
-    health.js              — healthScore() + nutrition helpers
-    cuisine.js             — emoji/label mapping for OSM cuisine tags
+    overpass.js            — Overpass API queries (bbox, 5-mile radius, 3 mirror fallback)
+    claude.js              — Claude API calls (proxy in prod, direct in dev)
+    health.js              — healthScore() + nutrition helpers + formatDistance (miles)
+    cuisine.js             — 40+ emoji/label mappings for OSM cuisine tags
+  pages/
+    LocatingPage.jsx       — radar ping, triggers geolocation, redirects to /
+    HomePage.jsx           — hero, stats bar, rescan button, restaurant list
+    MenuPage.jsx           — category tabs, filters, menu items, selection bar
+    AnalysisPage.jsx       — meal totals, item list, AI coaching panel
+api/
+  claude.js                — Vercel Edge Runtime proxy (keeps API key server-side)
 ```
 
 ---
@@ -81,7 +92,7 @@ src/
 ## Views / Routes
 ```
 /locating   — radar ping animation, awaiting geolocation
-/           — restaurant list (home), filter pills, stats
+/           — restaurant list (home), filter pills, stats, rescan button
 /menu/:id   — lazy-loaded AI menu for selected restaurant
 /analysis   — AI nutrition coaching panel
 ```
@@ -95,10 +106,31 @@ src/
 - NEVER use Inter, Roboto, or Arial — Playfair Display + Plus Jakarta Sans only
 - NEVER use purple gradients or generic "AI app" aesthetics
 - NEVER hardcode nutrition data — Claude generates contextually per restaurant cuisine
+- NEVER expose API keys client-side in production — use /api/claude proxy
 - Always include loading skeletons (pulse animation) while fetching
 - Always handle location denied gracefully with error banner + fallback UI
+- Always display distances in miles (formatDistance helper)
 - Score ring colors: green ≥75, gold ≥50, red <50 — no exceptions
-- Puppeteer `--no-sandbox` flag required if deploying on EC2
+
+---
+
+## API Architecture
+- **Dev:** Client calls Claude API directly using VITE_CLAUDE_API_KEY from .env
+- **Production:** Client calls /api/claude → Vercel Edge Runtime proxy → Claude API
+- The proxy reads ANTHROPIC_API_KEY from Vercel environment variables
+- Model: `claude-sonnet-4-20250514`
+- Menu generation: ~1200 max tokens per restaurant
+- Meal analysis: ~600 max tokens per session
+- Always strip markdown fences from JSON responses before parsing
+
+---
+
+## Overpass API
+- Search radius: 5 miles (8.05 km)
+- Uses bounding box queries (faster than `around:` at large radii)
+- Single `nwr` regex query for restaurant, fast_food, cafe
+- 3 mirror fallback: kumi.systems → overpass-api.de → maps.mail.ru
+- Results enriched with cuisine emoji/labels from cuisine.js
 
 ---
 
@@ -107,27 +139,20 @@ After every UI change:
 ```bash
 pnpm screenshot        # screenshots all routes at 1440px
 pnpm screenshot:mobile # screenshots all routes at 390px
-pnpm test:hover        # hover interaction tests on cards
+pnpm test:interactions  # hover interaction tests on cards
+pnpm qa                # both at once
 ```
 Screenshots output to `/screenshots/` — review before committing.
 
 ---
 
-## Claude API Usage
-- Model: `claude-sonnet-4-20250514`
-- Menu generation: ~700 tokens per restaurant
-- Meal analysis: ~500 tokens per session
-- Always strip markdown fences from JSON responses before parsing
-- Handle API failures gracefully — show retry UI, never crash
-
----
-
-## Framer MCP Sync Rules
-- Design tokens live in Framer variables — sync to CSS custom properties
-- Code components live in `src/components/` — push via MCP after each major update
-- Never override Framer layout with CSS position:absolute unless necessary
-- AnimatePresence must wrap route outlet for page transitions
-- Keep Framer canvas for layout/spacing, React for animation logic
+## Custom Skills
+```
+/scaffold [all|routes|components|hooks|lib|config]  — scaffold app structure
+/qa [screenshots|interactions|all]                   — run Puppeteer QA + review
+/component ComponentName                             — create/update a component
+/review-screenshots [path|all]                       — visual review of PNGs
+```
 
 ---
 
@@ -138,11 +163,3 @@ Screenshots output to `/screenshots/` — review before committing.
 /analysis            → analysis_desktop.png, analysis_mobile.png
 /locating            → locating_desktop.png
 ```
-
----
-
-## Prompt Patterns That Work Well
-- "Read the RestaurantCard from Framer. Add a staggered entrance so cards drop in one by one with spring physics. Run screenshots after."
-- "The health score ring should animate its stroke from 0 to the final value on mount. Use Framer Motion, not CSS. Re-screenshot /menu."
-- "Compare before.png and after.png. Did the card spacing improve? Is the red CTA button getting clipped on mobile?"
-- "Add scroll-triggered entrance to every MenuItemCard using useInView. Stagger by 0.08s. Spring physics only."
