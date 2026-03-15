@@ -20,12 +20,17 @@ const userIcon = new L.DivIcon({
   iconAnchor: [7, 7],
 })
 
-// Custom marker for restaurants
+// Custom pin drop marker for restaurants
 const restaurantIcon = new L.DivIcon({
   className: "",
-  html: `<div style="width:28px;height:28px;background:#fff;border:2px solid var(--border,rgba(0,0,0,0.08));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,0.1)">🍽️</div>`,
-  iconSize: [28, 28],
-  iconAnchor: [14, 14],
+  html: `<svg width="28" height="36" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.27 21.73 0 14 0z" fill="#D91429"/>
+    <circle cx="14" cy="13" r="6" fill="#fff"/>
+    <text x="14" y="16" text-anchor="middle" font-size="10" fill="#D91429">🍽</text>
+  </svg>`,
+  iconSize: [28, 36],
+  iconAnchor: [14, 36],
+  popupAnchor: [0, -36],
 })
 
 function FitBounds({ restaurants, userCoords }) {

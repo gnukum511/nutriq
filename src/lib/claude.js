@@ -97,7 +97,7 @@ export async function generateMenu(restaurantName, cuisineType) {
 
   const userPrompt = `Generate a realistic menu for "${restaurantName}" (${cuisineType} cuisine).
 
-Return a JSON array of 8-12 items. Each item:
+Return a JSON array of 8-10 items. Each item:
 {
   "id": "unique_id",
   "name": "Dish Name",
@@ -119,8 +119,19 @@ Categories should be relevant to the cuisine (e.g., Mains, Starters, Salads, Sid
 Nutrition values should be realistic estimates.
 Prices in USD, realistic for the cuisine type.`
 
-  const raw = await callClaude(systemPrompt, userPrompt, 1200)
-  return JSON.parse(stripFences(raw))
+  const raw = await callClaude(systemPrompt, userPrompt, 2000)
+  const cleaned = stripFences(raw)
+  try {
+    return JSON.parse(cleaned)
+  } catch {
+    // If JSON is truncated, try to salvage by closing the array
+    const lastComplete = cleaned.lastIndexOf("}")
+    if (lastComplete > 0) {
+      const salvaged = cleaned.slice(0, lastComplete + 1) + "]"
+      return JSON.parse(salvaged)
+    }
+    throw new Error("Failed to parse menu data")
+  }
 }
 
 /**
