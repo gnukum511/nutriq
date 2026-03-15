@@ -5,10 +5,13 @@ import { spring, fadeUpItem, StaggerList, ScrollReveal } from "../components/ani
 import { useAnalysis } from "../hooks/useAnalysis"
 import MacroPill from "../components/MacroPill"
 import AIAnalysisPanel from "../components/AIAnalysisPanel"
+import { useGoals } from "../hooks/useGoals"
 
 export default function AnalysisPage() {
   const navigate = useNavigate()
   const { analysis, loading, error, analyze } = useAnalysis()
+  const { goals, dailyTotals, addMealToDaily, progress } = useGoals()
+  const [tracked, setTracked] = useState(false)
 
   const selectedItems = useMemo(() => {
     try {
@@ -220,8 +223,9 @@ export default function AnalysisPage() {
         error={error}
       />
 
-      {/* Share button */}
+      {/* Share button + Daily Progress */}
       {analysis && (
+        <>
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -255,7 +259,100 @@ export default function AnalysisPage() {
           >
             📋 Copy Analysis
           </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            transition={spring.snappy}
+            onClick={() => {
+              addMealToDaily(selectedItems)
+              setTracked(true)
+            }}
+            disabled={tracked}
+            style={{
+              padding: "8px 16px",
+              borderRadius: 10,
+              border: "none",
+              background: tracked ? "var(--green-dim)" : "var(--green)",
+              color: tracked ? "var(--green)" : "#fff",
+              fontSize: 13,
+              fontWeight: 600,
+              fontFamily: "var(--font-body)",
+              cursor: tracked ? "default" : "pointer",
+            }}
+          >
+            {tracked ? "✓ Tracked" : "＋ Track Meal"}
+          </motion.button>
         </motion.div>
+
+        {/* Daily Progress */}
+        <ScrollReveal delay={0.1} style={{ marginTop: 16 }}>
+          <div
+            style={{
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: 14,
+              padding: 16,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+            }}
+          >
+            <p
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 11,
+                fontWeight: 700,
+                color: "var(--cream-dim)",
+                textTransform: "uppercase",
+                letterSpacing: 1,
+                marginBottom: 12,
+              }}
+            >
+              Daily Progress
+            </p>
+            {[
+              { label: "Calories", key: "cal", color: "var(--gold)", unit: "" },
+              { label: "Protein", key: "protein", color: "var(--green)", unit: "g" },
+              { label: "Carbs", key: "carbs", color: "var(--cream-dim)", unit: "g" },
+              { label: "Fat", key: "fat", color: "var(--orange)", unit: "g" },
+            ].map(({ label, key, color, unit }) => (
+              <div key={key} style={{ marginBottom: 10 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: 12,
+                    fontFamily: "var(--font-body)",
+                    marginBottom: 4,
+                  }}
+                >
+                  <span style={{ color: "var(--cream-dim)" }}>{label}</span>
+                  <span style={{ color, fontWeight: 600 }}>
+                    {dailyTotals[key]}{unit} / {goals[key]}{unit}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    height: 6,
+                    borderRadius: 3,
+                    background: "var(--surface3)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress[key]}%` }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    style={{
+                      height: "100%",
+                      borderRadius: 3,
+                      background: color,
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </ScrollReveal>
+        </>
       )}
 
       {/* Meal History */}

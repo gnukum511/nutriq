@@ -60,6 +60,17 @@ h1, h2, h3, h4 {
   color: var(--red);
 }
 
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible {
+  outline-offset: 2px;
+}
+
 /* Mobile responsive */
 @media (max-width: 480px) {
   .restaurant-list {
