@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { StaggerList, fadeUpItem, spring, WordReveal, ScrollReveal } from "../components/animations"
@@ -11,6 +11,8 @@ export default function HomePage() {
   const [status, setStatus] = useState("loading")
   const [restaurants, setRestaurants] = useState([])
   const [error, setError] = useState(null)
+  const [search, setSearch] = useState("")
+  const [sortBy, setSortBy] = useState("distance") // distance | name | cuisine
 
   useEffect(() => {
     const storedStatus = sessionStorage.getItem("nutriq_location_status")
@@ -41,6 +43,23 @@ export default function HomePage() {
     sessionStorage.removeItem("nutriq_location_error")
     navigate("/locating", { replace: true })
   }, [navigate])
+
+  const displayedRestaurants = useMemo(() => {
+    let list = [...restaurants]
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      list = list.filter(
+        (r) =>
+          r.name.toLowerCase().includes(q) ||
+          (r.cuisineLabel || "").toLowerCase().includes(q) ||
+          (r.cuisine || "").toLowerCase().includes(q)
+      )
+    }
+    if (sortBy === "name") list.sort((a, b) => a.name.localeCompare(b.name))
+    else if (sortBy === "cuisine") list.sort((a, b) => (a.cuisineLabel || "").localeCompare(b.cuisineLabel || ""))
+    else list.sort((a, b) => a.distance - b.distance)
+    return list
+  }, [restaurants, search, sortBy])
 
   const handleCardClick = (restaurant) => {
     sessionStorage.setItem("nutriq_selected_restaurant", JSON.stringify(restaurant))
@@ -177,16 +196,63 @@ export default function HomePage() {
         </ScrollReveal>
       )}
 
+      {/* Search + Sort */}
+      {restaurants.length > 0 && (
+        <ScrollReveal delay={0.1} style={{ marginBottom: 16 }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <input
+              type="text"
+              placeholder="Search restaurants..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{
+                flex: 1,
+                padding: "9px 14px",
+                borderRadius: 10,
+                border: "1px solid var(--border)",
+                background: "var(--surface)",
+                color: "var(--cream)",
+                fontSize: 13,
+                fontFamily: "var(--font-body)",
+                outline: "none",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+              }}
+            />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              style={{
+                padding: "9px 12px",
+                borderRadius: 10,
+                border: "1px solid var(--border)",
+                background: "var(--surface)",
+                color: "var(--cream-dim)",
+                fontSize: 12,
+                fontFamily: "var(--font-body)",
+                fontWeight: 600,
+                cursor: "pointer",
+                outline: "none",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+              }}
+            >
+              <option value="distance">Nearest</option>
+              <option value="name">A–Z</option>
+              <option value="cuisine">Cuisine</option>
+            </select>
+          </div>
+        </ScrollReveal>
+      )}
+
       {/* Loading state */}
       {status === "loading" && <SkeletonLoader count={5} />}
 
       {/* Restaurant list */}
-      {status === "located" && restaurants.length > 0 && (
+      {status === "located" && restaurants.length > 0 && displayedRestaurants.length > 0 && (
         <StaggerList
           className="restaurant-list"
           style={{ display: "flex", flexDirection: "column", gap: 10 }}
         >
-          {restaurants.map((r, i) => (
+          {displayedRestaurants.map((r, i) => (
             <motion.div key={r.id} variants={fadeUpItem}>
               <RestaurantCard
                 restaurant={r}
@@ -196,6 +262,21 @@ export default function HomePage() {
             </motion.div>
           ))}
         </StaggerList>
+      )}
+
+      {status === "located" && restaurants.length > 0 && displayedRestaurants.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          style={{
+            textAlign: "center",
+            padding: "32px 20px",
+            fontFamily: "var(--font-body)",
+            color: "var(--cream-dim)",
+          }}
+        >
+          <p style={{ fontSize: 14 }}>No restaurants match "{search}"</p>
+        </motion.div>
       )}
 
       {status === "located" && restaurants.length === 0 && (
