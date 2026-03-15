@@ -152,6 +152,67 @@ export default function MenuPage() {
             >
               {restaurant.cuisineLabel} · {formatDistance(restaurant.distance)} away
             </p>
+            {/* Details */}
+            <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+              {restaurant.phone && (
+                <a
+                  href={`tel:${restaurant.phone}`}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    padding: "3px 10px",
+                    borderRadius: 6,
+                    background: "var(--surface2)",
+                    color: "var(--cream-dim)",
+                    fontSize: 11,
+                    fontFamily: "var(--font-body)",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                  }}
+                >
+                  📞 {restaurant.phone}
+                </a>
+              )}
+              {restaurant.website && (
+                <a
+                  href={restaurant.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    padding: "3px 10px",
+                    borderRadius: 6,
+                    background: "var(--surface2)",
+                    color: "var(--cream-dim)",
+                    fontSize: 11,
+                    fontFamily: "var(--font-body)",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                  }}
+                >
+                  🌐 Website
+                </a>
+              )}
+              {restaurant.lat && (
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${restaurant.lat},${restaurant.lon}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    padding: "3px 10px",
+                    borderRadius: 6,
+                    background: "var(--surface2)",
+                    color: "var(--cream-dim)",
+                    fontSize: 11,
+                    fontFamily: "var(--font-body)",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                  }}
+                >
+                  🗺️ Directions
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </motion.div>

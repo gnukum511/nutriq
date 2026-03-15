@@ -5,6 +5,7 @@ import { StaggerList, fadeUpItem, spring, WordReveal, ScrollReveal, Skeleton } f
 import RestaurantCard from "../components/RestaurantCard"
 import SkeletonLoader from "../components/SkeletonLoader"
 import { formatDistance } from "../lib/health"
+import { useFavorites } from "../hooks/useFavorites"
 
 const RestaurantMap = lazy(() => import("../components/RestaurantMap"))
 
@@ -17,6 +18,7 @@ export default function HomePage() {
   const [sortBy, setSortBy] = useState("distance") // distance | name | cuisine
   const [view, setView] = useState("list") // list | map
   const [userCoords, setUserCoords] = useState(null)
+  const { isFavorite, toggleFavorite } = useFavorites()
 
   useEffect(() => {
     const storedStatus = sessionStorage.getItem("nutriq_location_status")
@@ -296,6 +298,8 @@ export default function HomePage() {
                 restaurant={r}
                 index={i}
                 onClick={handleCardClick}
+                isFavorite={isFavorite(r.id)}
+                onToggleFavorite={toggleFavorite}
               />
             </motion.div>
           ))}

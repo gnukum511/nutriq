@@ -14,7 +14,7 @@ const LANGUAGES = [
   { code: "ar", label: "العربية", flag: "🇸🇦" },
 ]
 
-export default function Header({ onMenuToggle }) {
+export default function Header({ onMenuToggle, theme, onThemeToggle }) {
   const navigate = useNavigate()
   const location = useLocation()
   const [langOpen, setLangOpen] = useState(false)
@@ -45,7 +45,7 @@ export default function Header({ onMenuToggle }) {
         position: "sticky",
         top: 0,
         zIndex: 100,
-        background: "rgba(250,250,248,0.92)",
+        background: theme === "dark" ? "rgba(14,14,15,0.92)" : "rgba(250,250,248,0.92)",
         backdropFilter: "blur(12px)",
         borderBottom: "1px solid var(--border)",
         padding: "0 16px",
@@ -128,6 +128,14 @@ export default function Header({ onMenuToggle }) {
               )}
             </AnimatePresence>
           </div>
+
+          {/* Theme toggle */}
+          <HeaderButton
+            onClick={onThemeToggle}
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? "🌙" : "☀️"}
+          </HeaderButton>
 
           {/* Notifications */}
           <div style={{ position: "relative" }}>

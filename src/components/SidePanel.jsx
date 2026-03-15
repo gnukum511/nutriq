@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { spring } from "./animations"
+import { useFavorites } from "../hooks/useFavorites"
 
 const NAV_ITEMS = [
   { path: "/", label: "Restaurants", icon: "🍽️" },
@@ -15,6 +16,7 @@ const BOTTOM_ITEMS = [
 export default function SidePanel({ open, onClose }) {
   const navigate = useNavigate()
   const location = useLocation()
+  const { favorites } = useFavorites()
 
   const handleNav = (path) => {
     navigate(path)
@@ -180,6 +182,58 @@ export default function SidePanel({ open, onClose }) {
                 <DailyStat label="Protein" value={getDailyVal("protein")} goal={getGoalVal("protein")} unit="g" color="var(--green)" />
               </div>
             </div>
+
+            {/* Favorites */}
+            {favorites.length > 0 && (
+              <div style={{ padding: "0 10px", borderTop: "1px solid var(--border)", paddingTop: 12 }}>
+                <p
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "var(--muted)",
+                    textTransform: "uppercase",
+                    letterSpacing: 1,
+                    padding: "0 10px 8px",
+                    fontFamily: "var(--font-body)",
+                  }}
+                >
+                  Favorites
+                </p>
+                {favorites.slice(0, 5).map((fav) => (
+                  <motion.button
+                    key={fav.id}
+                    whileHover={{ background: "var(--surface2)" }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={spring.snappy}
+                    onClick={() => {
+                      sessionStorage.setItem("nutriq_selected_restaurant", JSON.stringify(fav))
+                      navigate(`/menu/${fav.id}`)
+                      onClose()
+                    }}
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "8px 12px",
+                      borderRadius: 8,
+                      border: "none",
+                      background: "transparent",
+                      cursor: "pointer",
+                      fontFamily: "var(--font-body)",
+                      fontSize: 13,
+                      color: "var(--cream)",
+                      textAlign: "left",
+                      marginBottom: 2,
+                    }}
+                  >
+                    <span>{fav.emoji}</span>
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fav.name}</span>
+                    <span style={{ marginLeft: "auto", fontSize: 10, color: "var(--red)" }}>❤️</span>
+                  </motion.button>
+                ))}
+              </div>
+            )}
 
             {/* Bottom */}
             <div style={{ padding: "0 10px", borderTop: "1px solid var(--border)", paddingTop: 12 }}>

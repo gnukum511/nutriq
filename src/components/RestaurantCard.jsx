@@ -2,7 +2,7 @@ import { motion } from "framer-motion"
 import { restaurantCardVariants, spring } from "./animations"
 import { formatDistance } from "../lib/health"
 
-export default function RestaurantCard({ restaurant, index, onClick }) {
+export default function RestaurantCard({ restaurant, index, onClick, isFavorite, onToggleFavorite }) {
   return (
     <motion.div
       data-testid="restaurant-card"
@@ -89,6 +89,30 @@ export default function RestaurantCard({ restaurant, index, onClick }) {
       >
         {formatDistance(restaurant.distance)}
       </motion.span>
+
+      {/* Favorite heart */}
+      {onToggleFavorite && (
+        <motion.button
+          whileHover={{ scale: 1.2 }}
+          whileTap={{ scale: 0.8 }}
+          transition={spring.snappy}
+          onClick={(e) => {
+            e.stopPropagation()
+            onToggleFavorite(restaurant)
+          }}
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            fontSize: 18,
+            padding: 4,
+            flexShrink: 0,
+          }}
+        >
+          {isFavorite ? "❤️" : "🤍"}
+        </motion.button>
+      )}
     </motion.div>
   )
 }
