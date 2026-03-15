@@ -174,7 +174,7 @@ export default function MenuPage() {
         >
           <strong>Failed to load menu.</strong>{" "}
           <span style={{ color: "var(--cream-dim)" }}>
-            {error.includes("API_KEY") ? "API key not configured." : error.includes("401") ? "Invalid API key." : "Please try again."}
+            {error.includes("API_KEY") ? "API key not configured." : error.includes("401") ? "Invalid API key." : error}
           </span>
           <br />
           <motion.button
