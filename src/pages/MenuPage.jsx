@@ -8,6 +8,7 @@ import MenuItemCard from "../components/MenuItemCard"
 import FilterPills from "../components/FilterPills"
 import CategoryTabs from "../components/CategoryTabs"
 import SelectionBar from "../components/SelectionBar"
+import { formatDistance } from "../lib/health"
 import SkeletonLoader from "../components/SkeletonLoader"
 
 export default function MenuPage() {
@@ -149,9 +150,7 @@ export default function MenuPage() {
                 marginTop: 2,
               }}
             >
-              {restaurant.cuisineLabel} · {restaurant.distance < 1
-                ? `${Math.round(restaurant.distance * 1000)}m away`
-                : `${restaurant.distance.toFixed(1)}km away`}
+              {restaurant.cuisineLabel} · {formatDistance(restaurant.distance)} away
             </p>
           </div>
         </div>
@@ -174,7 +173,9 @@ export default function MenuPage() {
           }}
         >
           <strong>Failed to load menu.</strong>{" "}
-          <span style={{ color: "var(--cream-dim)" }}>{error}</span>
+          <span style={{ color: "var(--cream-dim)" }}>
+            {error.includes("API_KEY") ? "API key not configured." : error.includes("401") ? "Invalid API key." : "Please try again."}
+          </span>
           <br />
           <motion.button
             whileHover={{ scale: 1.03 }}
@@ -199,7 +200,33 @@ export default function MenuPage() {
       )}
 
       {/* Loading */}
-      {loading && <SkeletonLoader count={6} />}
+      {loading && (
+        <>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: 13,
+              color: "var(--cream-dim)",
+              marginBottom: 14,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <motion.span
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              style={{ display: "inline-block", fontSize: 16 }}
+            >
+              ✦
+            </motion.span>
+            Generating menu with AI...
+          </motion.p>
+          <SkeletonLoader count={6} />
+        </>
+      )}
 
       {/* Menu loaded */}
       {!loading && menu.length > 0 && (

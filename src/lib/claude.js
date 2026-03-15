@@ -1,16 +1,50 @@
 /**
  * NUTRÏQ — Claude API integration
  * Menu generation + meal analysis via claude-sonnet-4-20250514
+ *
+ * In production: requests go through /api/claude serverless proxy (key stays server-side)
+ * In dev: uses VITE_CLAUDE_API_KEY from .env with direct browser access
  */
 
-const MODEL = "claude-sonnet-4-20250514"
+const isDev = import.meta.env.DEV
 
 /**
- * Call Claude API via proxy endpoint
- * In production, requests go through your backend to protect the API key.
- * For dev, set VITE_CLAUDE_API_KEY in .env (never commit this).
+ * Call Claude API — routes through proxy in production, direct in dev
  */
 async function callClaude(systemPrompt, userPrompt, maxTokens = 1024) {
+  if (isDev) {
+    return callClaudeDirect(systemPrompt, userPrompt, maxTokens)
+  }
+  return callClaudeProxy(systemPrompt, userPrompt, maxTokens)
+}
+
+/**
+ * Production: call via Vercel serverless proxy
+ */
+async function callClaudeProxy(systemPrompt, userPrompt, maxTokens) {
+  const res = await fetch("/api/claude", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      system: systemPrompt,
+      prompt: userPrompt,
+      max_tokens: maxTokens,
+    }),
+  })
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.error || `API error: ${res.status}`)
+  }
+
+  const data = await res.json()
+  return data.text
+}
+
+/**
+ * Dev: call Claude API directly with browser key
+ */
+async function callClaudeDirect(systemPrompt, userPrompt, maxTokens) {
   const apiKey = import.meta.env.VITE_CLAUDE_API_KEY
   if (!apiKey) {
     throw new Error("VITE_CLAUDE_API_KEY not set in .env")
@@ -25,7 +59,7 @@ async function callClaude(systemPrompt, userPrompt, maxTokens = 1024) {
       "anthropic-dangerous-direct-browser-access": "true",
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: "claude-sonnet-4-20250514",
       max_tokens: maxTokens,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],

@@ -75,6 +75,15 @@ export function formatCal(cal) {
 }
 
 /**
+ * Format distance (km) as miles
+ */
+export function formatDistance(km) {
+  const miles = km * 0.621371
+  if (miles < 0.1) return `${Math.round(miles * 5280)} ft`
+  return `${miles.toFixed(1)} mi`
+}
+
+/**
  * Check if an item matches a filter
  */
 export function matchesFilter(item, filter) {

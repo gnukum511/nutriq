@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { StaggerList, fadeUpItem, spring, WordReveal, ScrollReveal } from "../components/animations"
 import RestaurantCard from "../components/RestaurantCard"
 import SkeletonLoader from "../components/SkeletonLoader"
+import { formatDistance } from "../lib/health"
 
 export default function HomePage() {
   const navigate = useNavigate()
@@ -149,9 +150,7 @@ export default function HomePage() {
               <span>
                 Nearest:{" "}
                 <strong style={{ color: "var(--orange)" }}>
-                  {restaurants[0].distance < 1
-                    ? `${Math.round(restaurants[0].distance * 1000)}m`
-                    : `${restaurants[0].distance.toFixed(1)}km`}
+                  {formatDistance(restaurants[0].distance)}
                 </strong>
               </span>
             </div>

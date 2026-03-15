@@ -1,5 +1,6 @@
 import { motion } from "framer-motion"
 import { restaurantCardVariants, spring } from "./animations"
+import { formatDistance } from "../lib/health"
 
 export default function RestaurantCard({ restaurant, index, onClick }) {
   return (
@@ -65,6 +66,9 @@ export default function RestaurantCard({ restaurant, index, onClick }) {
           }}
         >
           {restaurant.cuisineLabel}
+          {restaurant.phone && (
+            <span style={{ color: "var(--muted)", marginLeft: 6 }}>· {restaurant.phone}</span>
+          )}
         </p>
       </div>
 
@@ -83,9 +87,7 @@ export default function RestaurantCard({ restaurant, index, onClick }) {
         }}
         transition={spring.snappy}
       >
-        {restaurant.distance < 1
-          ? `${Math.round(restaurant.distance * 1000)}m`
-          : `${restaurant.distance.toFixed(1)}km`}
+        {formatDistance(restaurant.distance)}
       </motion.span>
     </motion.div>
   )
