@@ -242,7 +242,7 @@ export default function Header({ onMenuToggle, theme, onThemeToggle }) {
                   <DropdownItem onClick={() => { setProfileOpen(false); navigate("/analysis") }}>
                     📊 Dashboard
                   </DropdownItem>
-                  <DropdownItem onClick={() => setProfileOpen(false)}>
+                  <DropdownItem onClick={() => { setProfileOpen(false); navigate("/settings") }}>
                     ⚙️ Settings
                   </DropdownItem>
                 </Dropdown>

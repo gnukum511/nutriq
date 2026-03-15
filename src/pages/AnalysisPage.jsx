@@ -6,6 +6,7 @@ import { useAnalysis } from "../hooks/useAnalysis"
 import MacroPill from "../components/MacroPill"
 import AIAnalysisPanel from "../components/AIAnalysisPanel"
 import { useGoals } from "../hooks/useGoals"
+import MealComparison from "../components/MealComparison"
 
 export default function AnalysisPage() {
   const navigate = useNavigate()
@@ -396,6 +397,9 @@ export default function AnalysisPage() {
           </div>
         </ScrollReveal>
       )}
+
+      {/* Meal Comparison */}
+      {history.length >= 2 && <MealComparison history={history} />}
 
       {/* Retry button */}
       {error && (

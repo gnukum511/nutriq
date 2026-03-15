@@ -9,8 +9,8 @@ const NAV_ITEMS = [
 ]
 
 const BOTTOM_ITEMS = [
-  { label: "Settings", icon: "⚙️", action: "settings" },
-  { label: "About NUTRÏQ", icon: "ℹ️", action: "about" },
+  { label: "Settings", icon: "⚙️", path: "/settings" },
+  { label: "About NUTRÏQ", icon: "ℹ️", path: null },
 ]
 
 export default function SidePanel({ open, onClose }) {
@@ -243,7 +243,7 @@ export default function SidePanel({ open, onClose }) {
                   whileHover={{ background: "var(--surface2)" }}
                   whileTap={{ scale: 0.98 }}
                   transition={spring.snappy}
-                  onClick={onClose}
+                  onClick={() => { if (item.path) navigate(item.path); onClose() }}
                   style={{
                     width: "100%",
                     display: "flex",

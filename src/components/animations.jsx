@@ -331,14 +331,12 @@ export function CountUp({ value, suffix = "", prefix = "", style }) {
 // ─── SKELETON PULSE ───────────────────────────────────────────────────────────
 export function Skeleton({ width = "100%", height = 16, borderRadius = 8, style }) {
   return (
-    <motion.div
+    <div
+      className="skeleton-shimmer"
       style={{
         width, height, borderRadius,
-        background: "rgba(0,0,0,0.05)",
         ...style,
       }}
-      animate={{ opacity: [0.3, 0.7, 0.3] }}
-      transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
     />
   )
 }
