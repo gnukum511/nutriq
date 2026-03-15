@@ -1,7 +1,9 @@
-import { useEffect, lazy, Suspense } from "react"
+import { useEffect, useState, lazy, Suspense } from "react"
 import { Routes, Route, useLocation } from "react-router-dom"
 import { AnimatePresence } from "framer-motion"
 import { PageTransition, Skeleton } from "./components/animations"
+import Header from "./components/Header"
+import SidePanel from "./components/SidePanel"
 import LocatingPage from "./pages/LocatingPage"
 
 const HomePage = lazy(() => import("./pages/HomePage"))
@@ -28,24 +30,37 @@ function PageLoader() {
 
 export default function App() {
   const location = useLocation()
+  const [sideOpen, setSideOpen] = useState(false)
+  const isLocating = location.pathname === "/locating"
 
   useEffect(() => {
     const path = location.pathname
     document.title = TITLES[path] || (path.startsWith("/menu") ? "Menu — NUTRÏQ" : "NUTRÏQ")
   }, [location.pathname])
 
+  // Close side panel on route change
+  useEffect(() => {
+    setSideOpen(false)
+  }, [location.pathname])
+
   return (
-    <AnimatePresence mode="wait">
-      <PageTransition routeKey={location.pathname}>
-        <Suspense fallback={<PageLoader />}>
-          <Routes location={location}>
-            <Route path="/locating" element={<LocatingPage />} />
-            <Route path="/" element={<HomePage />} />
-            <Route path="/menu/:id" element={<MenuPage />} />
-            <Route path="/analysis" element={<AnalysisPage />} />
-          </Routes>
-        </Suspense>
-      </PageTransition>
-    </AnimatePresence>
+    <>
+      {!isLocating && (
+        <Header onMenuToggle={() => setSideOpen(true)} />
+      )}
+      <SidePanel open={sideOpen} onClose={() => setSideOpen(false)} />
+      <AnimatePresence mode="wait">
+        <PageTransition routeKey={location.pathname}>
+          <Suspense fallback={<PageLoader />}>
+            <Routes location={location}>
+              <Route path="/locating" element={<LocatingPage />} />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/menu/:id" element={<MenuPage />} />
+              <Route path="/analysis" element={<AnalysisPage />} />
+            </Routes>
+          </Suspense>
+        </PageTransition>
+      </AnimatePresence>
+    </>
   )
 }
