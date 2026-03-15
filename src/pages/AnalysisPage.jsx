@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { spring, fadeUpItem, StaggerList, ScrollReveal } from "../components/animations"
@@ -26,11 +26,40 @@ export default function AnalysisPage() {
     fat: selectedItems.reduce((s, i) => s + i.fat, 0),
   }), [selectedItems])
 
+  const [history, setHistory] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("nutriq_meal_history") || "[]")
+    } catch {
+      return []
+    }
+  })
+
   useEffect(() => {
     if (selectedItems.length > 0 && !analysis && !loading) {
       analyze(selectedItems)
     }
   }, [selectedItems, analysis, loading, analyze])
+
+  // Save to history when analysis completes
+  useEffect(() => {
+    if (analysis && selectedItems.length > 0) {
+      const entry = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString(),
+        items: selectedItems.map((i) => i.name),
+        totals,
+        analysis,
+      }
+      const prev = JSON.parse(localStorage.getItem("nutriq_meal_history") || "[]")
+      // Don't duplicate if same items
+      const isDupe = prev.length > 0 && JSON.stringify(prev[0].items) === JSON.stringify(entry.items)
+      if (!isDupe) {
+        const updated = [entry, ...prev].slice(0, 20) // keep last 20
+        localStorage.setItem("nutriq_meal_history", JSON.stringify(updated))
+        setHistory(updated)
+      }
+    }
+  }, [analysis, selectedItems, totals])
 
   if (selectedItems.length === 0) {
     return (
@@ -190,6 +219,86 @@ export default function AnalysisPage() {
         loading={loading}
         error={error}
       />
+
+      {/* Share button */}
+      {analysis && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          style={{ display: "flex", gap: 8, marginTop: 12 }}
+        >
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            transition={spring.snappy}
+            onClick={() => {
+              const text = `🍽️ NUTRÏQ Meal Analysis\n\n${selectedItems.map((i) => `• ${i.name} (${i.cal} cal)`).join("\n")}\n\nTotals: ${totals.cal} cal | ${totals.protein}g protein | ${totals.carbs}g carbs | ${totals.fat}g fat\n\n${analysis}`
+              if (navigator.share) {
+                navigator.share({ title: "NUTRÏQ Meal Analysis", text })
+              } else {
+                navigator.clipboard.writeText(text)
+                alert("Copied to clipboard!")
+              }
+            }}
+            style={{
+              padding: "8px 16px",
+              borderRadius: 10,
+              border: "1px solid var(--border)",
+              background: "var(--surface)",
+              color: "var(--cream-dim)",
+              fontSize: 13,
+              fontWeight: 600,
+              fontFamily: "var(--font-body)",
+              cursor: "pointer",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+            }}
+          >
+            📋 Copy Analysis
+          </motion.button>
+        </motion.div>
+      )}
+
+      {/* Meal History */}
+      {history.length > 1 && (
+        <ScrollReveal delay={0.2} style={{ marginTop: 32 }}>
+          <h2
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: 18,
+              fontWeight: 700,
+              color: "var(--cream)",
+              marginBottom: 12,
+            }}
+          >
+            Past Meals
+          </h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {history.slice(1, 6).map((entry) => (
+              <div
+                key={entry.id}
+                style={{
+                  padding: "10px 14px",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 10,
+                  fontFamily: "var(--font-body)",
+                  fontSize: 13,
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                  <span style={{ color: "var(--cream-dim)", fontSize: 11 }}>{entry.date}</span>
+                  <span style={{ color: "var(--gold)", fontWeight: 600, fontSize: 12 }}>
+                    {entry.totals.cal} cal
+                  </span>
+                </div>
+                <span style={{ color: "var(--cream)" }}>
+                  {entry.items.join(", ")}
+                </span>
+              </div>
+            ))}
+          </div>
+        </ScrollReveal>
+      )}
 
       {/* Retry button */}
       {error && (

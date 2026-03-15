@@ -1,0 +1,17 @@
+{
+  "name": "NUTRÏQ — Eat Smarter",
+  "short_name": "NUTRÏQ",
+  "description": "AI-powered nutrition insights for restaurants near you",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFAF8",
+  "theme_color": "#D91429",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
