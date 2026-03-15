@@ -79,10 +79,13 @@ async function callClaudeDirect(systemPrompt, userPrompt, maxTokens) {
  * Strip markdown code fences from Claude JSON responses
  */
 function stripFences(text) {
-  // Handle ```json ... ``` wrapping (can appear with or without newlines)
-  const match = text.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/)
-  if (match) return match[1].trim()
-  return text.trim()
+  // Remove opening fence (```json or ```)
+  let cleaned = text.trim()
+  if (cleaned.startsWith("```")) {
+    cleaned = cleaned.replace(/^```(?:json)?\s*\n/, "")
+    cleaned = cleaned.replace(/\n?\s*```\s*$/, "")
+  }
+  return cleaned.trim()
 }
 
 /**
