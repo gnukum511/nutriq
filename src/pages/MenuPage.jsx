@@ -10,7 +10,7 @@ import CategoryTabs from "../components/CategoryTabs"
 import SelectionBar from "../components/SelectionBar"
 import { formatDistance } from "../lib/health"
 import SkeletonLoader from "../components/SkeletonLoader"
-import CuisineIcon from "../components/CuisineIcon"
+import RestaurantLogo from "../components/RestaurantLogo"
 
 // Deterministic pseudo-values from restaurant name (same as RestaurantCard)
 function pseudoRating(name) {
@@ -170,14 +170,7 @@ export default function MenuPage() {
 
           {/* Restaurant info */}
           <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-            <div style={{
-              width: 52, height: 52, borderRadius: 14,
-              background: "rgba(255,255,255,0.15)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flexShrink: 0,
-            }}>
-              <CuisineIcon cuisine={restaurant.cuisine} size={26} color="rgba(255,255,255,0.85)" />
-            </div>
+            <RestaurantLogo website={restaurant.website} cuisine={restaurant.cuisine} size={52} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <h1 style={{
                 fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 700,

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion"
 import { restaurantCardVariants, spring } from "./animations"
 import { formatDistance } from "../lib/health"
-import CuisineIcon from "./CuisineIcon"
+import RestaurantLogo from "./RestaurantLogo"
 
 // Deterministic "rating" from restaurant name (consistent per restaurant)
 function pseudoRating(name) {
@@ -94,21 +94,8 @@ export default function RestaurantCard({ restaurant, index, onClick, isFavorite,
       />
 
       <div style={{ padding: "14px 16px 16px", display: "flex", gap: 14, alignItems: "flex-start" }}>
-        {/* Cuisine icon */}
-        <div
-          style={{
-            width: 48,
-            height: 48,
-            borderRadius: 12,
-            background: "var(--surface2)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          <CuisineIcon cuisine={restaurant.cuisine} size={24} color="var(--cream-dim)" />
-        </div>
+        {/* Restaurant logo or cuisine icon */}
+        <RestaurantLogo website={restaurant.website} cuisine={restaurant.cuisine} size={48} />
 
         {/* Main info */}
         <div style={{ flex: 1, minWidth: 0 }}>
