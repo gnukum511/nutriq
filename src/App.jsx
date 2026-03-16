@@ -5,7 +5,9 @@ import { PageTransition, Skeleton } from "./components/animations"
 import Header from "./components/Header"
 import SidePanel from "./components/SidePanel"
 import Onboarding from "./components/Onboarding"
+import LoginPage from "./pages/LoginPage"
 import { useTheme } from "./hooks/useTheme"
+import { useAuth } from "./hooks/useAuth"
 import Footer from "./components/Footer"
 import ErrorBoundary from "./components/ErrorBoundary"
 import LocatingPage from "./pages/LocatingPage"
@@ -37,6 +39,7 @@ export default function App() {
   const location = useLocation()
   const [sideOpen, setSideOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
+  const { user, signIn, signUp, signOut, isAuthenticated } = useAuth()
   const [showOnboarding, setShowOnboarding] = useState(
     () => !localStorage.getItem("nutriq_onboarded")
   )
@@ -56,10 +59,20 @@ export default function App() {
     return <Onboarding onComplete={() => setShowOnboarding(false)} />
   }
 
+  if (!isAuthenticated) {
+    return <LoginPage onAuth={() => {}} signIn={signIn} signUp={signUp} />
+  }
+
   return (
     <ErrorBoundary>
       {!isLocating && (
-        <Header onMenuToggle={() => setSideOpen(true)} theme={theme} onThemeToggle={toggleTheme} />
+        <Header
+          onMenuToggle={() => setSideOpen(true)}
+          theme={theme}
+          onThemeToggle={toggleTheme}
+          user={user}
+          onSignOut={signOut}
+        />
       )}
       <SidePanel open={sideOpen} onClose={() => setSideOpen(false)} />
       <AnimatePresence mode="wait">

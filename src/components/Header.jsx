@@ -14,7 +14,7 @@ const LANGUAGES = [
   { code: "ar", label: "العربية", flag: "🇸🇦" },
 ]
 
-export default function Header({ onMenuToggle, theme, onThemeToggle }) {
+export default function Header({ onMenuToggle, theme, onThemeToggle, user, onSignOut }) {
   const navigate = useNavigate()
   const location = useLocation()
   const [langOpen, setLangOpen] = useState(false)
@@ -226,15 +226,15 @@ export default function Header({ onMenuToggle, theme, onThemeToggle }) {
                   fontFamily: "var(--font-body)",
                 }}
               >
-                U
+                {user?.name?.[0]?.toUpperCase() || "U"}
               </div>
             </HeaderButton>
             <AnimatePresence>
               {profileOpen && (
                 <Dropdown width={200}>
                   <div style={{ padding: "10px 12px", borderBottom: "1px solid var(--border)" }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "var(--cream)", margin: 0 }}>User</p>
-                    <p style={{ fontSize: 12, color: "var(--cream-dim)", margin: "2px 0 0" }}>Free Plan</p>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: "var(--cream)", margin: 0 }}>{user?.name || "User"}</p>
+                    <p style={{ fontSize: 12, color: "var(--cream-dim)", margin: "2px 0 0" }}>{user?.email || "Free Plan"}</p>
                   </div>
                   <DropdownItem onClick={() => { setProfileOpen(false); navigate("/") }}>
                     🏠 Home
@@ -244,6 +244,9 @@ export default function Header({ onMenuToggle, theme, onThemeToggle }) {
                   </DropdownItem>
                   <DropdownItem onClick={() => { setProfileOpen(false); navigate("/settings") }}>
                     ⚙️ Settings
+                  </DropdownItem>
+                  <DropdownItem onClick={() => { setProfileOpen(false); onSignOut?.() }}>
+                    🚪 Sign Out
                   </DropdownItem>
                 </Dropdown>
               )}
