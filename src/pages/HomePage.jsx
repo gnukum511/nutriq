@@ -6,6 +6,7 @@ import RestaurantCard from "../components/RestaurantCard"
 import SkeletonLoader from "../components/SkeletonLoader"
 import { formatDistance } from "../lib/health"
 import { useFavorites } from "../hooks/useFavorites"
+import { useGoals } from "../hooks/useGoals"
 
 const RestaurantMap = lazy(() => import("../components/RestaurantMap"))
 
@@ -19,6 +20,7 @@ export default function HomePage() {
   const [view, setView] = useState("list")
   const [userCoords, setUserCoords] = useState(null)
   const { isFavorite, toggleFavorite } = useFavorites()
+  const { dailyTotals, goals, progress } = useGoals()
 
   useEffect(() => {
     const storedStatus = sessionStorage.getItem("nutriq_location_status")
@@ -303,6 +305,45 @@ export default function HomePage() {
                 </motion.button>
               </div>
             </div>
+          </ScrollReveal>
+        )}
+
+        {/* Daily macro summary strip */}
+        {dailyTotals.cal > 0 && (
+          <ScrollReveal style={{ marginBottom: 16 }}>
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              onClick={() => navigate("/tracker")}
+              style={{
+                background: "var(--surface)", border: "1px solid var(--border)",
+                borderRadius: 12, padding: "12px 16px", cursor: "pointer",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+              }}
+            >
+              <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                {[
+                  { label: "Cal", value: dailyTotals.cal, goal: goals.cal, color: "var(--gold)", pct: progress.cal },
+                  { label: "Pro", value: `${dailyTotals.protein}g`, goal: goals.protein, color: "var(--green)", pct: progress.protein },
+                  { label: "Carb", value: `${dailyTotals.carbs}g`, goal: goals.carbs, color: "var(--cream-dim)", pct: progress.carbs },
+                  { label: "Fat", value: `${dailyTotals.fat}g`, goal: goals.fat, color: "var(--orange)", pct: progress.fat },
+                ].map(({ label, value, color, pct }) => (
+                  <div key={label} style={{ textAlign: "center" }}>
+                    <div style={{ fontFamily: "var(--font-body)", fontSize: 14, fontWeight: 700, color }}>{value}</div>
+                    <div style={{ width: 40, height: 3, borderRadius: 2, background: "var(--surface3)", marginTop: 3 }}>
+                      <div style={{ width: `${Math.min(pct, 100)}%`, height: "100%", borderRadius: 2, background: color }} />
+                    </div>
+                    <div style={{ fontFamily: "var(--font-body)", fontSize: 10, color: "var(--muted)", marginTop: 2 }}>{label}</div>
+                  </div>
+                ))}
+              </div>
+              <span style={{
+                fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 600,
+                color: "var(--red)", whiteSpace: "nowrap",
+              }}>
+                View Tracker →
+              </span>
+            </motion.div>
           </ScrollReveal>
         )}
 

@@ -16,6 +16,8 @@ const HomePage = lazy(() => import("./pages/HomePage"))
 const MenuPage = lazy(() => import("./pages/MenuPage"))
 const AnalysisPage = lazy(() => import("./pages/AnalysisPage"))
 const SettingsPage = lazy(() => import("./pages/SettingsPage"))
+const ProfilePage = lazy(() => import("./pages/ProfilePage"))
+const TrackerPage = lazy(() => import("./pages/TrackerPage"))
 
 const TITLES = {
   "/locating": "Finding Restaurants — NUTRÏQ",
@@ -84,6 +86,8 @@ export default function App() {
               <Route path="/menu/:id" element={<MenuPage />} />
               <Route path="/analysis" element={<AnalysisPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/tracker" element={<TrackerPage />} />
             </Routes>
           </Suspense>
         </PageTransition>
