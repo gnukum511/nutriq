@@ -3,7 +3,7 @@
 ## Project Identity
 - App name: NUTRÏQ
 - Purpose: Location-based restaurant menu health advisor with AI nutrition coaching
-- Stack: React 18 + Vite, Framer Motion, Tailwind CSS, Leaflet, Anthropic Claude API, Overpass API (OSM)
+- Stack: React 18 + Vite, Framer Motion, Tailwind CSS, Leaflet, Lucide React, Anthropic Claude API, Overpass API (OSM)
 - Fonts: Playfair Display (display/headings), Plus Jakarta Sans (body/UI)
 - Deployed: Vercel at https://nutriq-wine.vercel.app
 - Repo: https://github.com/gnukum511/nutriq
@@ -45,11 +45,23 @@
 ```
 
 **Color rules:**
-- Red = action/urgency ONLY (CTAs, selected states)
-- Gold = value/delight (prices, highlights, AI labels)
-- Orange = secondary energy (badges, distance)
-- Green = health data ONLY
+- Red = action/urgency ONLY (CTAs, selected states, hero banners)
+- Gold = value/delight (prices, highlights, AI labels, calorie counts)
+- Orange = secondary energy (badges, distance, fat counts)
+- Green = health data ONLY (protein, open status, tracked meals)
 - Cards get subtle box-shadow for depth on light background
+
+---
+
+## UI Design Pattern — Yelp-Inspired
+- **Red gradient hero banners** on all main pages (Home, Menu, Analysis, Settings, Profile, Tracker)
+- **Search-first layout** with embedded search bar in hero
+- **Star ratings + review counts + price tiers** on restaurant cards (pseudo-generated from name)
+- **Open/Closed status** with green/red dot indicators
+- **Cuisine tags + distance badges + delivery links** on each card
+- **DoorDash + Uber Eats deep links** on every restaurant
+- **Restaurant logos** via Google favicon service, fallback to Lucide cuisine icons
+- **Consistent red header pattern**: gradient 135deg, var(--red) to #B5101F, radial light overlay
 
 ---
 
@@ -60,6 +72,7 @@
 - Route transitions: AnimatePresence with slide + fade
 - Skeleton loaders: CSS shimmer gradient animation
 - Health score rings: draw on mount with easeOut
+- Tracker progress rings: animated strokeDasharray on mount
 - Never use CSS `transition:` — always Framer Motion
 - Spring config standard: `{ type: "spring", stiffness: 300, damping: 24 }`
 - Spring config bouncy: `{ type: "spring", stiffness: 420, damping: 20 }`
@@ -71,12 +84,15 @@
 src/
   components/
     animations.jsx         — ALL animation exports (StaggerList, Pressable, etc.)
-    Header.jsx             — sticky header: logo, language, theme, notifications, profile
+    Header.jsx             — sticky header: logo, language, theme (Lucide icons), notifications, profile
     SidePanel.jsx          — slide-in nav: routes, daily stats, favorites, settings
     Onboarding.jsx         — 4-slide first-time welcome carousel
-    RestaurantCard.jsx     — location list item with favorites heart
+    RestaurantCard.jsx     — Yelp-style card: logo, stars, price, status, delivery links
+    RestaurantLogo.jsx     — favicon from website, fallback to CuisineIcon
     RestaurantMap.jsx      — Leaflet map with pin drop markers + hover tooltips
-    MenuItemCard.jsx       — dish with macro pills, score ring, dietary tags
+    CuisineIcon.jsx        — Lucide React icons mapped to 30+ cuisine types
+    DeliveryLinks.jsx      — DoorDash + Uber Eats deep links (pill + compact variants)
+    MenuItemCard.jsx       — dish with macro pills, score ring, dietary tags, checkbox
     ScoreRing.jsx          — SVG health score donut (0-100)
     MacroPill.jsx          — cal/protein/carbs/fat badge
     FilterPills.jsx        — 9 filters: nutrition + dietary
@@ -86,27 +102,33 @@ src/
     MealComparison.jsx     — side-by-side meal nutrition diff
     SkeletonLoader.jsx     — shimmer loading cards
     LocationPin.jsx        — radar ping for locating screen
-    Footer.jsx             — credits + version
+    Footer.jsx             — brand name + version
     ErrorBoundary.jsx      — React crash recovery UI
   hooks/
     useLocation.js         — geolocation + Overpass API fetch
     useMenu.js             — AI menu generation (session-cached)
     useAnalysis.js         — AI meal analysis
     useFilters.js          — 9 filter options + item matching
-    useGoals.js            — daily nutrition goals + tracking
+    useGoals.js            — daily nutrition goals, diet presets, tracking, progress
     useTheme.js            — dark/light theme toggle
     useFavorites.js        — restaurant favorites (localStorage)
+    useAuth.js             — localStorage auth (sign in/up/out)
   lib/
     overpass.js            — Overpass API (bbox, 5mi, 3 mirrors)
     claude.js              — Claude API (proxy in prod, direct in dev)
     health.js              — healthScore() + formatDistance (miles)
     cuisine.js             — 40+ emoji/label mappings for OSM tags
+    diets.js               — 9 diet presets (Keto, Cutting, Bulking, etc.) with macro targets
+    tdee.js                — TDEE calculator (Mifflin-St Jeor), BMR, macro recommendations
   pages/
     LocatingPage.jsx       — radar ping, triggers geolocation
-    HomePage.jsx           — hero, search/sort, list/map toggle, restaurant cards
-    MenuPage.jsx           — categories, filters, menu items, restaurant details
-    AnalysisPage.jsx       — totals, AI coaching, daily progress, history, comparison
-    SettingsPage.jsx       — goal sliders, data management
+    LoginPage.jsx          — sign in / sign up with localStorage auth
+    HomePage.jsx           — red search hero, restaurant cards, macro summary strip
+    MenuPage.jsx           — red restaurant banner, categories, filters, menu items
+    AnalysisPage.jsx       — red header, macro stat cards, AI coaching, daily progress
+    SettingsPage.jsx       — diet regimen selector (9 presets), macro sliders, data management
+    ProfilePage.jsx        — gender, age, height, weight, activity, weight goal → TDEE calculator
+    TrackerPage.jsx        — circular macro progress rings, today's meals, history
 api/
   claude.js                — Vercel Edge Runtime proxy
 public/
@@ -120,10 +142,12 @@ public/
 ## Views / Routes
 ```
 /locating   — radar ping, awaiting geolocation
-/           — restaurant list/map, search, sort, filters, favorites
-/menu/:id   — AI menu with categories, dietary tags, selection bar
-/analysis   — meal totals, AI coaching, daily progress, history, comparison
-/settings   — goal editor, data management, reset options
+/           — red search hero, restaurant list/map, macro summary strip
+/menu/:id   — red restaurant banner, AI menu with categories, dietary tags, selection bar
+/analysis   — red header, macro stat cards, AI coaching, daily progress, history, comparison
+/settings   — red header, diet regimen selector (9 presets), macro sliders, data management
+/profile    — red header, body stats (gender/age/height/weight), activity, weight goal, TDEE calc
+/tracker    — red header, circular progress rings, today's meals, meal history
 ```
 
 ---
@@ -134,10 +158,12 @@ public/
 - NEVER use CSS transitions — Framer Motion only
 - NEVER use Inter, Roboto, or Arial — Playfair Display + Plus Jakarta Sans only
 - NEVER expose API keys client-side in production — use /api/claude proxy
+- NEVER use emoji icons in UI chrome — use Lucide React (strokeWidth={1.5})
 - Always include shimmer skeleton loaders while fetching
 - Always handle location denied gracefully
 - Always display distances in miles (formatDistance helper)
 - Score ring colors: green ≥75, gold ≥50, red <50
+- All pages use consistent red gradient hero banner
 
 ---
 
@@ -156,6 +182,19 @@ public/
 - Radius: 5 miles (8.05 km), bounding box queries
 - Single `nwr` regex for restaurant, fast_food, cafe
 - 3 mirror fallback: kumi.systems → overpass-api.de → mail.ru
+- Extracts: name, cuisine, phone, website, lat, lon
+
+---
+
+## Diet & Macro System
+- 9 diet presets: Custom, Balanced, Cutting, Bulking, Keto, High Protein, Low Carb, Vegan, Paleo
+- TDEE calculation: Mifflin-St Jeor equation (male/female)
+- Activity levels: Sedentary, Light, Moderate, Very Active, Athlete
+- Weight goals: Lose Fast (-750), Lose (-500), Lose Slow (-250), Maintain, Gain Slow (+250), Gain (+500)
+- Protein: scaled by body weight × activity multiplier
+- Fat: 25-30% of target calories
+- Carbs: remaining calories after protein + fat
+- Daily tracking with progress rings and over-budget warnings
 
 ---
 
@@ -163,6 +202,22 @@ public/
 Nutrition-based: High Protein, Low Calorie, Low Carb, Balanced
 Diet-based: Keto, Gluten-Free, Paleo, Vegan, Allergy-Safe
 Claude generates tags per item: keto, gluten-free, paleo, vegan, vegetarian, dairy-free, nut-free, shellfish-free
+
+---
+
+## Delivery Integration
+- DoorDash: `https://www.doordash.com/search/store/{name}/`
+- Uber Eats: `https://www.ubereats.com/search?q={name}`
+- Deep links on RestaurantCard (pill variant) and MenuPage header (compact variant)
+- Opens in new tab, does not trigger card click (stopPropagation)
+
+---
+
+## Icon System
+- UI icons: Lucide React (`lucide-react`), strokeWidth={1.5}
+- Header: Moon/Sun, Bell, LayoutGrid, Home, Settings, LogOut
+- Cuisine: Beef, Pizza, Fish, Coffee, Soup, Flame, Salad, etc. (30+ mappings in CuisineIcon.jsx)
+- Restaurant logos: Google favicon service (`google.com/s2/favicons?domain=...&sz=64`), fallback to CuisineIcon
 
 ---
 
@@ -179,15 +234,16 @@ Claude generates tags per item: keto, gluten-free, paleo, vegan, vegetarian, dai
 
 ## Puppeteer QA
 ```bash
-pnpm screenshot        # all routes, 3 viewports
-pnpm test:interactions  # hover, selection, filters, mobile
-pnpm qa                # both
+npm run screenshot      # all routes, 2 viewports (desktop + mobile)
+npm run test:interactions  # hover, selection, filters
+npm run qa              # both
 ```
+Screenshot script seeds localStorage (onboarded + auth) and sessionStorage (restaurants + coords) to bypass onboarding and auth gates.
 
 ---
 
-## Framer MCP Sync Rules
-- Design tokens live in Framer variables — sync to CSS custom properties
-- Code components live in `src/components/` — push via MCP
-- AnimatePresence must wrap route outlet for page transitions
-- Keep Framer canvas for layout/spacing, React for animation logic
+## Framer MCP
+- Connected via `mcp-remote` with `http-first` transport
+- Portfolio site (separate from NUTRÏQ) — personal portfolio for gnukum511
+- ScrollAnimations.tsx override file created for scroll-triggered entrances
+- 404 page redesigned with message + Go Home button
