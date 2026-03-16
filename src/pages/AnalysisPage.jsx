@@ -126,17 +126,18 @@ export default function AnalysisPage() {
           </p>
 
           {/* Macro summary in hero */}
-          <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
             {[
               { label: "Calories", value: totals.cal, unit: "", color: "var(--gold)" },
-              { label: "Protein", value: totals.protein, unit: "g", color: "#6FE89B" },
-              { label: "Carbs", value: totals.carbs, unit: "g", color: "rgba(255,255,255,0.7)" },
-              { label: "Fat", value: totals.fat, unit: "g", color: "#FFB366" },
+              { label: "Protein", value: totals.protein, unit: "g", color: "var(--green)" },
+              { label: "Carbs", value: totals.carbs, unit: "g", color: "var(--cream-dim)" },
+              { label: "Fat", value: totals.fat, unit: "g", color: "var(--orange)" },
             ].map(({ label, value, unit, color }) => (
               <div key={label} style={{
-                background: "rgba(255,255,255,0.12)",
+                background: "var(--surface)",
                 borderRadius: 10, padding: "10px 16px",
                 flex: "1 1 0", minWidth: 80,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
               }}>
                 <div style={{
                   fontFamily: "var(--font-body)", fontSize: 20, fontWeight: 700, color,
@@ -144,7 +145,7 @@ export default function AnalysisPage() {
                   {value}{unit}
                 </div>
                 <div style={{
-                  fontFamily: "var(--font-body)", fontSize: 11, color: "rgba(255,255,255,0.55)",
+                  fontFamily: "var(--font-body)", fontSize: 11, color: "var(--muted)",
                   fontWeight: 600, marginTop: 2,
                 }}>
                   {label}
