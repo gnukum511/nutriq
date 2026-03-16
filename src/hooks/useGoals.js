@@ -1,14 +1,20 @@
 import { useState, useCallback, useMemo } from "react"
+import { getDietById } from "../lib/diets"
 
 const DEFAULT_GOALS = { cal: 2000, protein: 120, carbs: 250, fat: 65 }
 const STORAGE_KEY = "nutriq_goals"
 const DAILY_KEY = "nutriq_daily_totals"
+const DIET_KEY = "nutriq_diet"
 
 function getToday() {
   return new Date().toISOString().slice(0, 10)
 }
 
 export function useGoals() {
+  const [activeDiet, setActiveDiet] = useState(() => {
+    return localStorage.getItem(DIET_KEY) || "custom"
+  })
+
   const [goals, setGoals] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY)) || DEFAULT_GOALS
@@ -32,6 +38,16 @@ export function useGoals() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newGoals))
   }, [])
 
+  const selectDiet = useCallback((dietId) => {
+    setActiveDiet(dietId)
+    localStorage.setItem(DIET_KEY, dietId)
+    const diet = getDietById(dietId)
+    if (diet.goals) {
+      setGoals(diet.goals)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(diet.goals))
+    }
+  }, [])
+
   const addMealToDaily = useCallback((items) => {
     setDailyTotals((prev) => {
       const base = prev.date === getToday() ? prev : { date: getToday(), cal: 0, protein: 0, carbs: 0, fat: 0 }
@@ -47,6 +63,13 @@ export function useGoals() {
     })
   }, [])
 
+  const remaining = useMemo(() => ({
+    cal: Math.max(0, goals.cal - dailyTotals.cal),
+    protein: Math.max(0, goals.protein - dailyTotals.protein),
+    carbs: Math.max(0, goals.carbs - dailyTotals.carbs),
+    fat: Math.max(0, goals.fat - dailyTotals.fat),
+  }), [dailyTotals, goals])
+
   const progress = useMemo(() => ({
     cal: Math.min(100, Math.round((dailyTotals.cal / goals.cal) * 100)),
     protein: Math.min(100, Math.round((dailyTotals.protein / goals.protein) * 100)),
@@ -54,5 +77,17 @@ export function useGoals() {
     fat: Math.min(100, Math.round((dailyTotals.fat / goals.fat) * 100)),
   }), [dailyTotals, goals])
 
-  return { goals, updateGoals, dailyTotals, addMealToDaily, progress }
+  const overBudget = useMemo(() => ({
+    cal: dailyTotals.cal > goals.cal,
+    protein: dailyTotals.protein > goals.protein,
+    carbs: dailyTotals.carbs > goals.carbs,
+    fat: dailyTotals.fat > goals.fat,
+  }), [dailyTotals, goals])
+
+  return {
+    goals, updateGoals,
+    activeDiet, selectDiet,
+    dailyTotals, addMealToDaily,
+    remaining, progress, overBudget,
+  }
 }
