@@ -11,6 +11,7 @@ import SelectionBar from "../components/SelectionBar"
 import { formatDistance } from "../lib/health"
 import SkeletonLoader from "../components/SkeletonLoader"
 import RestaurantLogo from "../components/RestaurantLogo"
+import DeliveryLinks from "../components/DeliveryLinks"
 
 // Deterministic pseudo-values from restaurant name (same as RestaurantCard)
 function pseudoRating(name) {
@@ -244,6 +245,11 @@ export default function MenuPage() {
                     🗺️ Directions
                   </a>
                 )}
+              </div>
+
+              {/* Delivery links */}
+              <div style={{ marginTop: 10 }}>
+                <DeliveryLinks name={restaurant.name} variant="compact" />
               </div>
             </div>
           </div>

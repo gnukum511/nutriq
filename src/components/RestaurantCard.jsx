@@ -2,6 +2,7 @@ import { motion } from "framer-motion"
 import { restaurantCardVariants, spring } from "./animations"
 import { formatDistance } from "../lib/health"
 import RestaurantLogo from "./RestaurantLogo"
+import DeliveryLinks from "./DeliveryLinks"
 
 // Deterministic "rating" from restaurant name (consistent per restaurant)
 function pseudoRating(name) {
@@ -244,6 +245,9 @@ export default function RestaurantCard({ restaurant, index, onClick, isFavorite,
               </span>
             )}
           </div>
+
+          {/* Delivery links */}
+          <DeliveryLinks name={restaurant.name} variant="pill" />
         </div>
       </div>
     </motion.div>
