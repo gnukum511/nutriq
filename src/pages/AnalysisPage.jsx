@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { spring, fadeUpItem, StaggerList, ScrollReveal } from "../components/animations"
 import { useAnalysis } from "../hooks/useAnalysis"
+import { useQuota } from "../hooks/useQuota"
 import MacroPill from "../components/MacroPill"
 import AIAnalysisPanel from "../components/AIAnalysisPanel"
+import UpgradeModal from "../components/UpgradeModal"
 import { useGoals } from "../hooks/useGoals"
 import MealComparison from "../components/MealComparison"
 
@@ -12,6 +14,8 @@ export default function AnalysisPage() {
   const navigate = useNavigate()
   const { analysis, loading, error, analyze } = useAnalysis()
   const { goals, dailyTotals, addMealToDaily, progress } = useGoals()
+  const { canUse, recordUsage, remaining } = useQuota()
+  const [showUpgrade, setShowUpgrade] = useState(false)
   const [tracked, setTracked] = useState(false)
 
   const selectedItems = useMemo(() => {
@@ -40,9 +44,14 @@ export default function AnalysisPage() {
 
   useEffect(() => {
     if (selectedItems.length > 0 && !analysis && !loading) {
+      if (!canUse("analysis")) {
+        setShowUpgrade(true)
+        return
+      }
+      recordUsage("analysis")
       analyze(selectedItems)
     }
-  }, [selectedItems, analysis, loading, analyze])
+  }, [selectedItems, analysis, loading, analyze, canUse, recordUsage])
 
   useEffect(() => {
     if (analysis && selectedItems.length > 0) {
@@ -326,6 +335,12 @@ export default function AnalysisPage() {
             </motion.button>
           </motion.div>
         )}
+        <UpgradeModal
+          open={showUpgrade}
+          onClose={() => setShowUpgrade(false)}
+          feature="analysis"
+          remaining={remaining}
+        />
       </div>
     </div>
   )

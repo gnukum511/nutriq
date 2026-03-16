@@ -4,10 +4,12 @@ import { motion } from "framer-motion"
 import { StaggerList, fadeUpItem, spring, ScrollReveal } from "../components/animations"
 import { useMenu } from "../hooks/useMenu"
 import { useFilters } from "../hooks/useFilters"
+import { useQuota } from "../hooks/useQuota"
 import MenuItemCard from "../components/MenuItemCard"
 import FilterPills from "../components/FilterPills"
 import CategoryTabs from "../components/CategoryTabs"
 import SelectionBar from "../components/SelectionBar"
+import UpgradeModal from "../components/UpgradeModal"
 import { formatDistance } from "../lib/health"
 import SkeletonLoader from "../components/SkeletonLoader"
 import RestaurantLogo from "../components/RestaurantLogo"
@@ -65,6 +67,8 @@ export default function MenuPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { menu, loading, error, loadMenu } = useMenu()
+  const { canUse, recordUsage, remaining, isPro } = useQuota()
+  const [showUpgrade, setShowUpgrade] = useState(false)
   const [selectedItems, setSelectedItems] = useState([])
   const [activeCategory, setActiveCategory] = useState("All")
 
@@ -78,8 +82,21 @@ export default function MenuPage() {
   }, [id])
 
   useEffect(() => {
-    if (restaurant) loadMenu(restaurant)
-  }, [restaurant, loadMenu])
+    if (restaurant) {
+      // Check if menu is already cached (free — no quota cost)
+      if (window.__nutriqMenuCache?.[restaurant.id]) {
+        loadMenu(restaurant)
+        return
+      }
+      // Check quota for new generation
+      if (!canUse("menu")) {
+        setShowUpgrade(true)
+        return
+      }
+      recordUsage("menu")
+      loadMenu(restaurant)
+    }
+  }, [restaurant, loadMenu, canUse, recordUsage])
 
   const categories = useMemo(() => {
     const cats = [...new Set(menu.map((item) => item.cat))]
@@ -375,6 +392,13 @@ export default function MenuPage() {
           selectedItems={selectedItems}
           onAnalyze={handleAnalyze}
           onClear={() => setSelectedItems([])}
+        />
+
+        <UpgradeModal
+          open={showUpgrade}
+          onClose={() => setShowUpgrade(false)}
+          feature="menu"
+          remaining={remaining}
         />
       </div>
     </div>

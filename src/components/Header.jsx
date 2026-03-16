@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { spring } from "./animations"
-import { Moon, Sun, Bell, LayoutGrid, Home, Settings, LogOut } from "lucide-react"
+import { Moon, Sun, Bell, LayoutGrid, Home, Settings, LogOut, Zap } from "lucide-react"
 
 const LANGUAGES = [
   { code: "en", label: "English", flag: "🇺🇸" },
@@ -129,6 +129,20 @@ export default function Header({ onMenuToggle, theme, onThemeToggle, user, onSig
               )}
             </AnimatePresence>
           </div>
+
+          {/* Pro badge */}
+          {localStorage.getItem("nutriq_pro") === "true" && (
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 3,
+              padding: "3px 8px", borderRadius: 6,
+              background: "linear-gradient(135deg, #FFD700, #FFA500)",
+              fontSize: 10, fontWeight: 700, fontFamily: "var(--font-body)",
+              color: "#1A1A1A",
+            }}>
+              <Zap size={10} strokeWidth={2.5} />
+              PRO
+            </span>
+          )}
 
           {/* Theme toggle */}
           <HeaderButton
