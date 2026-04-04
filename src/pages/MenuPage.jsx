@@ -67,7 +67,7 @@ export default function MenuPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { menu, loading, error, loadMenu } = useMenu()
-  const { canUse, recordUsage, remaining, isPro } = useQuota()
+  const { canUse, recordUsage, remaining, isPro, startCheckout } = useQuota()
   const [showUpgrade, setShowUpgrade] = useState(false)
   const [selectedItems, setSelectedItems] = useState([])
   const [activeCategory, setActiveCategory] = useState("All")
@@ -399,6 +399,7 @@ export default function MenuPage() {
           onClose={() => setShowUpgrade(false)}
           feature="menu"
           remaining={remaining}
+          onCheckout={startCheckout}
         />
       </div>
     </div>

@@ -2,10 +2,10 @@
  * NUTRÏQ — Client-side API quota system
  * Tracks daily usage of AI features (menu generation + meal analysis).
  * Free tier: 3 menus/day, 1 analysis/day
- * Pro tier: unlimited (stored in localStorage, future: server-side)
+ * Pro tier: unlimited — verified via Stripe Checkout session on return
  */
 
-import { useState, useCallback, useMemo } from "react"
+import { useState, useCallback, useMemo, useEffect } from "react"
 
 const QUOTA_KEY = "nutriq_quota"
 const PRO_KEY = "nutriq_pro"
@@ -13,11 +13,6 @@ const PRO_KEY = "nutriq_pro"
 const FREE_LIMITS = {
   menu: 3,
   analysis: 1,
-}
-
-const PRO_LIMITS = {
-  menu: Infinity,
-  analysis: Infinity,
 }
 
 function getToday() {
@@ -41,13 +36,35 @@ function saveQuota(quota) {
 export function useQuota() {
   const [quota, setQuota] = useState(loadQuota)
   const [isPro, setIsPro] = useState(() => localStorage.getItem(PRO_KEY) === "true")
+  const [verifying, setVerifying] = useState(false)
 
-  const limits = isPro ? PRO_LIMITS : FREE_LIMITS
+  // After Stripe Checkout, the success URL returns ?session_id=cs_...
+  // Verify it server-side and persist Pro status if confirmed.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const sessionId = params.get("session_id")
+    if (!sessionId) return
+
+    // Clean the URL immediately so refreshing doesn't re-verify
+    window.history.replaceState({}, "", window.location.pathname + window.location.hash)
+
+    setVerifying(true)
+    fetch(`/api/stripe/verify?session_id=${encodeURIComponent(sessionId)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.isPro) {
+          localStorage.setItem(PRO_KEY, "true")
+          setIsPro(true)
+        }
+      })
+      .catch(() => {})
+      .finally(() => setVerifying(false))
+  }, [])
 
   const remaining = useMemo(() => ({
-    menu: Math.max(0, limits.menu - quota.menu),
-    analysis: Math.max(0, limits.analysis - quota.analysis),
-  }), [quota, limits])
+    menu: isPro ? Infinity : Math.max(0, FREE_LIMITS.menu - quota.menu),
+    analysis: isPro ? Infinity : Math.max(0, FREE_LIMITS.analysis - quota.analysis),
+  }), [quota, isPro])
 
   const canUse = useCallback((feature) => {
     if (isPro) return true
@@ -64,6 +81,21 @@ export function useQuota() {
     })
   }, [])
 
+  // Redirect to Stripe Checkout. plan: "monthly" | "annual"
+  const startCheckout = useCallback(async (plan = "monthly") => {
+    const res = await fetch("/api/stripe/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plan }),
+    })
+    const data = await res.json()
+    if (data.url) {
+      window.location.href = data.url
+    } else {
+      throw new Error(data.error || "Failed to start checkout")
+    }
+  }, [])
+
   const upgradeToPro = useCallback(() => {
     localStorage.setItem(PRO_KEY, "true")
     setIsPro(true)
@@ -77,10 +109,12 @@ export function useQuota() {
   return {
     quota,
     remaining,
-    limits,
+    limits: isPro ? { menu: Infinity, analysis: Infinity } : FREE_LIMITS,
     isPro,
+    verifying,
     canUse,
     recordUsage,
+    startCheckout,
     upgradeToPro,
     downgradeToFree,
   }

@@ -14,7 +14,7 @@ export default function AnalysisPage() {
   const navigate = useNavigate()
   const { analysis, loading, error, analyze } = useAnalysis()
   const { goals, dailyTotals, addMealToDaily, progress } = useGoals()
-  const { canUse, recordUsage, remaining } = useQuota()
+  const { canUse, recordUsage, remaining, startCheckout } = useQuota()
   const [showUpgrade, setShowUpgrade] = useState(false)
   const [tracked, setTracked] = useState(false)
 
@@ -340,6 +340,7 @@ export default function AnalysisPage() {
           onClose={() => setShowUpgrade(false)}
           feature="analysis"
           remaining={remaining}
+          onCheckout={startCheckout}
         />
       </div>
     </div>

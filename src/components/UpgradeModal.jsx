@@ -1,6 +1,7 @@
+import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { spring } from "./animations"
-import { X, Zap, ChefHat, Brain, History, GitCompare, Share2, Salad } from "lucide-react"
+import { X, Zap, ChefHat, Brain, History, GitCompare, Share2, Salad, Loader } from "lucide-react"
 
 const PRO_FEATURES = [
   { icon: ChefHat, label: "Unlimited AI menus", desc: "Generate as many restaurant menus as you want" },
@@ -11,9 +12,25 @@ const PRO_FEATURES = [
   { icon: Salad, label: "All diet presets", desc: "Access all 9 diet regimens including custom targets" },
 ]
 
-export default function UpgradeModal({ open, onClose, feature, remaining }) {
+export default function UpgradeModal({ open, onClose, feature, remaining, onCheckout }) {
   const featureLabel = feature === "menu" ? "AI menu generation" : "AI meal analysis"
   const limit = feature === "menu" ? 3 : 1
+  const [plan, setPlan] = useState("monthly")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  async function handleCheckout() {
+    if (!onCheckout) return
+    setError(null)
+    setLoading(true)
+    try {
+      await onCheckout(plan)
+      // onCheckout redirects — if we get here something went wrong
+    } catch (err) {
+      setError(err.message || "Could not start checkout. Please try again.")
+      setLoading(false)
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -118,49 +135,66 @@ export default function UpgradeModal({ open, onClose, feature, remaining }) {
                 ))}
               </div>
 
-              {/* Pricing */}
+              {/* Plan toggle */}
               <div style={{
-                background: "var(--surface2)", borderRadius: 14, padding: 16,
-                textAlign: "center", marginBottom: 16,
+                display: "flex", background: "var(--surface2)", borderRadius: 10,
+                padding: 4, gap: 4, marginBottom: 16,
               }}>
-                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 4 }}>
-                  <span style={{
-                    fontFamily: "var(--font-display)", fontSize: 36, fontWeight: 700,
-                    color: "var(--cream)",
-                  }}>
-                    $4.99
-                  </span>
-                  <span style={{
-                    fontFamily: "var(--font-body)", fontSize: 13, color: "var(--cream-dim)",
-                  }}>
-                    /month
-                  </span>
-                </div>
-                <p style={{
-                  fontFamily: "var(--font-body)", fontSize: 12, color: "var(--muted)",
-                  marginTop: 4,
-                }}>
-                  or $39.99/year (save 33%)
-                </p>
+                {[
+                  { key: "monthly", label: "$4.99/mo" },
+                  { key: "annual", label: "$39.99/yr  ·  save 33%" },
+                ].map(({ key, label }) => (
+                  <motion.button
+                    key={key}
+                    whileTap={{ scale: 0.97 }} transition={spring.snappy}
+                    onClick={() => setPlan(key)}
+                    style={{
+                      flex: 1, padding: "8px 0", border: "none", borderRadius: 7, cursor: "pointer",
+                      fontFamily: "var(--font-body)", fontSize: 12, fontWeight: 600,
+                      background: plan === key ? "var(--surface)" : "transparent",
+                      color: plan === key ? "var(--cream)" : "var(--cream-dim)",
+                      boxShadow: plan === key ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                    }}
+                  >
+                    {label}
+                  </motion.button>
+                ))}
               </div>
+
+              {/* Error */}
+              {error && (
+                <p style={{
+                  fontFamily: "var(--font-body)", fontSize: 12, color: "var(--red)",
+                  textAlign: "center", marginBottom: 10,
+                }}>
+                  {error}
+                </p>
+              )}
 
               {/* CTA */}
               <motion.button
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} transition={spring.snappy}
-                onClick={() => {
-                  // Future: Stripe checkout
-                  // For now, show alert
-                  alert("Payment integration coming soon! For now, enjoy unlimited access.")
-                  // Temporarily upgrade (demo mode)
-                }}
+                whileHover={{ scale: loading ? 1 : 1.02 }}
+                whileTap={{ scale: loading ? 1 : 0.97 }}
+                transition={spring.snappy}
+                onClick={handleCheckout}
+                disabled={loading}
                 style={{
                   width: "100%", padding: "14px 0", borderRadius: 12, border: "none",
                   background: "var(--red)", color: "#fff",
                   fontSize: 15, fontWeight: 700, fontFamily: "var(--font-body)",
-                  cursor: "pointer",
+                  cursor: loading ? "default" : "pointer",
                   boxShadow: "0 4px 16px rgba(217,20,41,0.3)",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  opacity: loading ? 0.8 : 1,
                 }}>
-                Start Free Trial
+                {loading ? (
+                  <>
+                    <Loader size={16} strokeWidth={2} style={{ animation: "spin 1s linear infinite" }} />
+                    Redirecting to checkout…
+                  </>
+                ) : (
+                  "Start Free Trial"
+                )}
               </motion.button>
 
               <p style={{
