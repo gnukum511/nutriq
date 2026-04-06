@@ -1,8 +1,16 @@
 /**
  * NUTRÏQ — Stripe Session Verifier
  * Called after Stripe redirects back with ?session_id=
- * Confirms the session is complete and the subscription is active.
+ * Confirms the session is complete and the subscription is active,
+ * then writes Pro status to Upstash Redis as the canonical source of truth.
+ *
+ * Required env vars:
+ *   STRIPE_SECRET_KEY
+ *   UPSTASH_REDIS_REST_URL
+ *   UPSTASH_REDIS_REST_TOKEN
  */
+
+import { Redis } from "@upstash/redis"
 
 export const config = { runtime: "edge" }
 
@@ -11,6 +19,13 @@ const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
+}
+
+function getRedis() {
+  const url = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  if (!url || !token) return null
+  return new Redis({ url, token })
 }
 
 export default async function handler(req) {
@@ -31,6 +46,7 @@ export default async function handler(req) {
   }
 
   try {
+    // 1. Verify the Checkout Session with Stripe (source of truth for payment)
     const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`, {
       headers: { Authorization: `Bearer ${secretKey}` },
     })
@@ -38,7 +54,19 @@ export default async function handler(req) {
     if (session.error) throw new Error(session.error.message)
 
     const isPro = session.status === "complete" && session.payment_status === "paid"
-    return new Response(JSON.stringify({ isPro, customerId: session.customer || null }), {
+    const customerId = session.customer || null
+
+    // 2. If payment confirmed, write Pro status to Redis so webhook events and
+    //    /api/stripe/status can enforce it server-side going forward.
+    //    Redis is best-effort here — the Stripe session is the authoritative check.
+    if (isPro && customerId) {
+      const redis = getRedis()
+      if (redis) {
+        await redis.set(`pro:${customerId}`, "true")
+      }
+    }
+
+    return new Response(JSON.stringify({ isPro, customerId }), {
       status: 200, headers: CORS,
     })
   } catch (err) {

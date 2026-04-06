@@ -9,6 +9,7 @@ import { useState, useCallback, useMemo, useEffect } from "react"
 
 const QUOTA_KEY = "nutriq_quota"
 const PRO_KEY = "nutriq_pro"
+const CUSTOMER_KEY = "nutriq_customer_id"
 
 const FREE_LIMITS = {
   menu: 3,
@@ -39,7 +40,7 @@ export function useQuota() {
   const [verifying, setVerifying] = useState(false)
 
   // After Stripe Checkout, the success URL returns ?session_id=cs_...
-  // Verify it server-side and persist Pro status if confirmed.
+  // Verify it server-side, persist Pro status and customerId if confirmed.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const sessionId = params.get("session_id")
@@ -56,9 +57,37 @@ export function useQuota() {
           localStorage.setItem(PRO_KEY, "true")
           setIsPro(true)
         }
+        // Persist customerId so subsequent /api/stripe/status calls can re-verify
+        if (data.customerId) {
+          localStorage.setItem(CUSTOMER_KEY, data.customerId)
+        }
       })
       .catch(() => {})
       .finally(() => setVerifying(false))
+  }, [])
+
+  // On every app load, re-verify Pro status server-side via Redis.
+  // This enforces subscription cancellations and payment failures that happened
+  // while the user was away (webhook updated Redis; localStorage may be stale).
+  useEffect(() => {
+    const customerId = localStorage.getItem(CUSTOMER_KEY)
+    if (!customerId) return
+
+    fetch(`/api/stripe/status?customer_id=${encodeURIComponent(customerId)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (typeof data.isPro !== "boolean") return
+        if (data.isPro) {
+          localStorage.setItem(PRO_KEY, "true")
+          setIsPro(true)
+        } else {
+          localStorage.removeItem(PRO_KEY)
+          setIsPro(false)
+        }
+      })
+      .catch(() => {
+        // Network failure — keep existing localStorage state; don't penalise the user
+      })
   }, [])
 
   const remaining = useMemo(() => ({

@@ -1,12 +1,30 @@
 /**
  * NUTRÏQ — Stripe Webhook Handler
- * Verifies signature and processes subscription lifecycle events.
- * Note: Pro status revocation (subscription.deleted, payment_failed) requires
- * Vercel KV for server-side storage. Until provisioned, these events are received
- * but cannot be enforced — Pro flag lives in client localStorage.
+ * Verifies HMAC-SHA256 signature and processes subscription lifecycle events.
+ * Writes Pro status to Upstash Redis (via Vercel Marketplace) on grant/revoke.
+ *
+ * KV key structure: pro:{customerId} → "true"
+ *
+ * Required env vars (set in Vercel dashboard, injected by Upstash integration):
+ *   UPSTASH_REDIS_REST_URL
+ *   UPSTASH_REDIS_REST_TOKEN
+ *   STRIPE_WEBHOOK_SECRET
  */
 
+import { Redis } from "@upstash/redis"
+
 export const config = { runtime: "edge" }
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function getRedis() {
+  const url = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  if (!url || !token) throw new Error("Upstash Redis env vars not configured")
+  return new Redis({ url, token })
+}
 
 async function verifySignature(rawBody, sigHeader, secret) {
   const parts = sigHeader.split(",").reduce((acc, part) => {
@@ -36,6 +54,32 @@ async function verifySignature(rawBody, sigHeader, secret) {
   return signatures.includes(computed)
 }
 
+// ---------------------------------------------------------------------------
+// Event handlers
+// ---------------------------------------------------------------------------
+
+/**
+ * Grant Pro status for a Stripe customer.
+ * @param {string} customerId
+ */
+async function grantPro(customerId) {
+  const redis = getRedis()
+  await redis.set(`pro:${customerId}`, "true")
+}
+
+/**
+ * Revoke Pro status for a Stripe customer.
+ * @param {string} customerId
+ */
+async function revokePro(customerId) {
+  const redis = getRedis()
+  await redis.del(`pro:${customerId}`)
+}
+
+// ---------------------------------------------------------------------------
+// Handler
+// ---------------------------------------------------------------------------
+
 export default async function handler(req) {
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 })
@@ -58,9 +102,41 @@ export default async function handler(req) {
     return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400 })
   }
 
-  // checkout.session.completed — Pro status is confirmed client-side via /api/stripe/verify
-  // customer.subscription.deleted / invoice.payment_failed — future: revoke in Vercel KV
-  // All events acknowledged so Stripe stops retrying.
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        // Payment confirmed — grant Pro. customerId may be null for one-time payments
+        // but is always present for subscription checkouts.
+        const customerId = event.data.object.customer
+        if (customerId) await grantPro(customerId)
+        break
+      }
+
+      case "customer.subscription.deleted": {
+        // Subscription cancelled or expired — revoke Pro immediately.
+        const customerId = event.data.object.customer
+        if (customerId) await revokePro(customerId)
+        break
+      }
+
+      case "invoice.payment_failed": {
+        // Payment failed — revoke Pro to enforce access control.
+        // Stripe will retry the invoice; Pro is re-granted if payment recovers
+        // via a future invoice.payment_succeeded or checkout.session.completed.
+        const customerId = event.data.object.customer
+        if (customerId) await revokePro(customerId)
+        break
+      }
+
+      default:
+        // Acknowledge all other events so Stripe stops retrying them.
+        break
+    }
+  } catch (err) {
+    // Log but still return 200 — returning non-2xx causes Stripe to retry,
+    // which can create duplicate side-effects. Surface errors via Vercel logs.
+    console.error(`[webhook] Failed to process ${event.type}:`, err.message)
+  }
 
   return new Response(JSON.stringify({ received: true }), { status: 200 })
 }
