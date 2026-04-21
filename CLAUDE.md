@@ -100,6 +100,7 @@ src/
     SelectionBar.jsx       — sticky meal tray summary
     AIAnalysisPanel.jsx    — Claude response renderer with markdown
     MealComparison.jsx     — side-by-side meal nutrition diff
+    UpgradeModal.jsx       — freemium upgrade modal (Pro features, pricing, Stripe placeholder)
     SkeletonLoader.jsx     — shimmer loading cards
     LocationPin.jsx        — radar ping for locating screen
     Footer.jsx             — brand name + version
@@ -113,6 +114,7 @@ src/
     useTheme.js            — dark/light theme toggle
     useFavorites.js        — restaurant favorites (localStorage)
     useAuth.js             — localStorage auth (sign in/up/out)
+    useQuota.js            — freemium API quota (free: 3 menus/day, 1 analysis/day; Pro: unlimited)
   lib/
     overpass.js            — Overpass API (bbox, 5mi, 3 mirrors)
     claude.js              — Claude API (proxy in prod, direct in dev)
@@ -171,7 +173,7 @@ public/
 - **Dev:** Client → Claude API directly (VITE_CLAUDE_API_KEY from .env)
 - **Production:** Client → /api/claude → Vercel Edge Runtime → Claude API
 - **Env vars:** ANTHROPIC_API_KEY (Vercel), VITE_CLAUDE_API_KEY (.env local)
-- Model: `claude-sonnet-4-20250514`
+- Model: `claude-sonnet-4-6`
 - Menu: 2000 max tokens, 8-10 items with dietary tags
 - Analysis: 600 max tokens
 - JSON salvage fallback for truncated responses
@@ -220,6 +222,26 @@ Claude generates tags per item: keto, gluten-free, paleo, vegan, vegetarian, dai
 - Restaurant logos: Google favicon service (`google.com/s2/favicons?domain=...&sz=64`), fallback to CuisineIcon
 
 ---
+
+## Active Work
+- **BLOCKED: Upstash Redis not provisioned** — run `vercel integration add upstash/upstash-kv`, accept terms in browser; Vercel injects `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` automatically
+- All Redis code deployed (20f00dd): webhook.js grants/revokes Pro, verify.js writes on checkout, status.js polls on load, useQuota.js re-verifies on mount
+- Preview env vars missing — Vercel CLI plugin blocks adds; must do via Vercel Dashboard → Settings → Environment Variables
+- `useAuth.js` has uncommitted test user seed (`apptest@nutriiq.com` / `password123!`) — intentional for QA
+- Stripe live key rolled 2026-04-05; new key in `.env` and Vercel production
+- **Codebase mapped** (ca1de94, 2026-04-06) — `.planning/codebase/` has STACK, INTEGRATIONS, ARCHITECTURE, STRUCTURE, CONVENTIONS, TESTING, CONCERNS docs
+
+## Stripe Integration
+```
+api/stripe/
+  checkout.js   — POST: creates Checkout Session, returns redirect URL
+  verify.js     — GET: verifies ?session_id= on return from Stripe
+  webhook.js    — POST: receives lifecycle events, verifies HMAC-SHA256
+```
+- Success URL: `https://nutriq-wine.vercel.app/?session_id={CHECKOUT_SESSION_ID}`
+- Pro status: verified client-side via /api/stripe/verify → stored in localStorage `nutriq_pro`
+- Monthly: price_1TIGHZANF8XrNJ2lfkTZFfoA ($4.99/mo) | Annual: price_1TIGHZANF8XrNJ2lAjtI5PEO ($39.99/yr)
+- Webhook ID: we_1TIGHZANF8XrNJ2l8qdaMRJi | Product: prod_UGntPwCQw1fcWm
 
 ## Custom Skills
 ```

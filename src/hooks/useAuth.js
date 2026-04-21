@@ -26,6 +26,23 @@ function hashPassword(password) {
   return hash.toString(36)
 }
 
+// Seed a test user on first load
+function seedTestUser() {
+  const users = getUsers()
+  const testEmail = "apptest@nutriiq.com"
+  if (!users.find((u) => u.email === testEmail)) {
+    users.push({
+      id: "test001",
+      name: "App Tester",
+      email: testEmail,
+      hash: hashPassword("password123!"),
+      createdAt: "2026-03-15T00:00:00.000Z",
+    })
+    saveUsers(users)
+  }
+}
+seedTestUser()
+
 export function useAuth() {
   const [user, setUser] = useState(() => {
     try {

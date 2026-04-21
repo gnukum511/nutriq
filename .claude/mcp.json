@@ -2,10 +2,12 @@
   "mcpServers": {
     "framer": {
       "command": "npx",
-      "args": ["@framer/mcp-server"],
-      "env": {
-        "FRAMER_API_KEY": "YOUR_FRAMER_API_KEY_HERE"
-      }
+      "args": [
+        "mcp-remote",
+        "https://mcp.unframer.co/mcp?id=831ebc43d47be6b409b567764b4e8db3fc01ba471ffd389e4363f4dcaa7a390e&secret=SK6iZ64VCeFStZMk7zbprJc2k0y3gj3p",
+        "--transport",
+        "http-first"
+      ]
     }
   }
 }
