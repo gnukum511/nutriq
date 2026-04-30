@@ -73,42 +73,72 @@ export default function HomePage() {
 
   return (
     <div style={{ paddingBottom: 100 }}>
-      {/* ── RED SEARCH HERO ── */}
+      {/* ── ORGANIC SEARCH HERO ── */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         style={{
-          background: "linear-gradient(135deg, var(--red) 0%, #B5101F 100%)",
-          padding: "36px 16px 32px",
+          background: "var(--gradient-hero)",
+          padding: "44px 16px 36px",
           marginTop: -8,
           position: "relative",
           overflow: "hidden",
+          borderBottom: "1px solid var(--border)",
         }}
       >
-        {/* Subtle pattern overlay */}
+        {/* Soft botanical glow */}
         <div style={{
           position: "absolute",
           inset: 0,
-          background: "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 60%)",
+          background: "radial-gradient(circle at 85% 15%, oklch(0.92 0.07 65 / 0.45) 0%, transparent 55%)",
+          pointerEvents: "none",
+        }} />
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "radial-gradient(circle at 10% 90%, oklch(0.92 0.075 145 / 0.35) 0%, transparent 50%)",
           pointerEvents: "none",
         }} />
 
         <div style={{ maxWidth: 680, margin: "0 auto", position: "relative" }}>
+          <motion.span
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...spring.standard, delay: 0.05 }}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "4px 10px",
+              borderRadius: 999,
+              background: "color-mix(in oklch, var(--primary-soft) 70%, transparent)",
+              border: "1px solid color-mix(in oklch, var(--primary) 22%, transparent)",
+              fontFamily: "var(--font-body)",
+              fontSize: 11,
+              fontWeight: 600,
+              color: "var(--primary)",
+              marginBottom: 14,
+            }}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--leaf)" }} />
+            Now scanning menus near you
+          </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...spring.standard, delay: 0.1 }}
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: 28,
-              fontWeight: 800,
-              lineHeight: 1.2,
-              color: "#fff",
-              marginBottom: 6,
+              fontSize: 34,
+              fontWeight: 500,
+              lineHeight: 1.05,
+              letterSpacing: -0.5,
+              color: "var(--foreground)",
+              marginBottom: 8,
             }}
           >
-            Eat What You Crave. Smarter.
+            Eat out.{" "}
+            <span style={{ fontStyle: "italic", color: "var(--primary)" }}>
+              Eat smart.
+            </span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -117,11 +147,13 @@ export default function HomePage() {
             style={{
               fontFamily: "var(--font-body)",
               fontSize: 14,
-              color: "rgba(255,255,255,0.75)",
-              marginBottom: 20,
+              color: "var(--muted-foreground)",
+              marginBottom: 22,
+              maxWidth: 460,
             }}
           >
-            AI-powered nutrition insights for restaurants near you
+            NUTRÏQ ranks every dish on every menu within five miles, so you can dine
+            out without throwing your week off track.
           </motion.p>
 
           {/* Search bar inside hero */}
@@ -135,12 +167,13 @@ export default function HomePage() {
               flex: 1,
               display: "flex",
               alignItems: "center",
-              background: "#fff",
-              borderRadius: 10,
+              background: "var(--card)",
+              border: "1px solid var(--border)",
+              borderRadius: 14,
               padding: "0 14px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+              boxShadow: "var(--shadow-soft)",
             }}>
-              <span style={{ fontSize: 15, marginRight: 8, opacity: 0.4 }}>&#x1F50D;</span>
+              <span style={{ fontSize: 15, marginRight: 8, opacity: 0.5 }}>&#x1F50D;</span>
               <input
                 type="text"
                 placeholder="Search restaurants, cuisines..."
@@ -148,10 +181,10 @@ export default function HomePage() {
                 onChange={(e) => setSearch(e.target.value)}
                 style={{
                   flex: 1,
-                  padding: "11px 0",
+                  padding: "12px 0",
                   border: "none",
                   background: "transparent",
-                  color: "#1A1A1A",
+                  color: "var(--foreground)",
                   fontSize: 14,
                   fontFamily: "var(--font-body)",
                   outline: "none",
@@ -163,16 +196,16 @@ export default function HomePage() {
               onChange={(e) => setSortBy(e.target.value)}
               style={{
                 padding: "10px 12px",
-                borderRadius: 10,
-                border: "none",
-                background: "rgba(255,255,255,0.95)",
-                color: "#1A1A1A",
+                borderRadius: 14,
+                border: "1px solid var(--border)",
+                background: "var(--card)",
+                color: "var(--foreground)",
                 fontSize: 12,
                 fontFamily: "var(--font-body)",
                 fontWeight: 600,
                 cursor: "pointer",
                 outline: "none",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                boxShadow: "var(--shadow-soft)",
               }}
             >
               <option value="distance">Nearest</option>
@@ -291,10 +324,10 @@ export default function HomePage() {
                   onClick={() => setView(view === "list" ? "map" : "list")}
                   style={{
                     padding: "6px 12px",
-                    borderRadius: 8,
-                    border: "1px solid var(--border)",
-                    background: view === "map" ? "var(--red)" : "var(--surface)",
-                    color: view === "map" ? "#fff" : "var(--cream-dim)",
+                    borderRadius: 999,
+                    border: `1px solid ${view === "map" ? "var(--primary)" : "var(--border)"}`,
+                    background: view === "map" ? "var(--primary)" : "var(--card)",
+                    color: view === "map" ? "var(--primary-foreground)" : "var(--muted-foreground)",
                     fontSize: 12,
                     fontWeight: 600,
                     fontFamily: "var(--font-body)",

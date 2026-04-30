@@ -24,10 +24,11 @@ export default function CategoryTabs({ categories, activeCategory, onSelect }) {
             onClick={() => onSelect(cat)}
             style={{
               padding: "8px 18px",
-              borderRadius: 12,
-              border: `1px solid ${isActive ? "var(--red)" : "var(--border)"}`,
-              background: isActive ? "var(--red)" : "var(--surface)",
-              color: isActive ? "#fff" : "var(--cream-dim)",
+              borderRadius: 999,
+              border: `1px solid ${isActive ? "var(--primary)" : "var(--border)"}`,
+              background: isActive ? "var(--primary)" : "var(--card)",
+              color: isActive ? "var(--primary-foreground)" : "var(--muted-foreground)",
+              boxShadow: isActive ? "var(--shadow-soft)" : "none",
               fontSize: 13,
               fontWeight: 600,
               fontFamily: "var(--font-body)",

@@ -150,16 +150,17 @@ export default function MenuPage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         style={{
-          background: "linear-gradient(135deg, var(--red) 0%, #B5101F 100%)",
+          background: "var(--gradient-hero)",
           padding: "28px 16px 24px",
           marginTop: -8,
           position: "relative",
           overflow: "hidden",
+          borderBottom: "1px solid var(--border)",
         }}
       >
         <div style={{
           position: "absolute", inset: 0,
-          background: "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 60%)",
+          background: "radial-gradient(circle at 85% 15%, oklch(0.92 0.07 65 / 0.45) 0%, transparent 55%)",
           pointerEvents: "none",
         }} />
 
@@ -171,16 +172,17 @@ export default function MenuPage() {
             transition={spring.snappy}
             onClick={() => navigate("/")}
             style={{
-              background: "rgba(255,255,255,0.15)",
-              border: "none",
-              color: "#fff",
+              background: "var(--card)",
+              border: "1px solid var(--border)",
+              color: "var(--foreground)",
               cursor: "pointer",
               fontFamily: "var(--font-body)",
               fontSize: 12,
               fontWeight: 600,
               padding: "5px 12px",
-              borderRadius: 8,
+              borderRadius: 999,
               marginBottom: 16,
+              boxShadow: "var(--shadow-soft)",
             }}
           >
             ← Back
@@ -191,8 +193,9 @@ export default function MenuPage() {
             <RestaurantLogo website={restaurant.website} cuisine={restaurant.cuisine} size={52} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <h1 style={{
-                fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 700,
-                color: "#fff", marginBottom: 6,
+                fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 500,
+                letterSpacing: -0.5,
+                color: "var(--foreground)", marginBottom: 6,
               }}>
                 {restaurant.name}
               </h1>
@@ -200,23 +203,23 @@ export default function MenuPage() {
               {/* Rating + price + status row */}
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                 <Stars rating={rating} size={14} />
-                <span style={{ color: "rgba(255,255,255,0.9)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-body)" }}>
+                <span style={{ color: "var(--foreground)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-body)" }}>
                   {rating}
                 </span>
-                <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>({reviewCount})</span>
-                <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>·</span>
-                <span style={{ color: "rgba(255,255,255,0.9)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-body)" }}>
+                <span style={{ color: "var(--muted-foreground)", fontSize: 12 }}>({reviewCount})</span>
+                <span style={{ color: "var(--muted-foreground)", fontSize: 11, opacity: 0.5 }}>·</span>
+                <span style={{ color: "var(--foreground)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-body)" }}>
                   {"$".repeat(priceTier)}<span style={{ opacity: 0.3 }}>{"$".repeat(3 - priceTier)}</span>
                 </span>
-                <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>·</span>
+                <span style={{ color: "var(--muted-foreground)", fontSize: 11, opacity: 0.5 }}>·</span>
                 <span style={{
                   display: "inline-flex", alignItems: "center", gap: 4,
-                  padding: "2px 8px", borderRadius: 6,
-                  background: isOpen ? "rgba(27,163,77,0.2)" : "rgba(255,255,255,0.15)",
+                  padding: "2px 8px", borderRadius: 999,
+                  background: isOpen ? "color-mix(in oklch, var(--leaf) 15%, transparent)" : "var(--muted)",
                   fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
-                  color: isOpen ? "#6FE89B" : "rgba(255,255,255,0.7)",
+                  color: isOpen ? "var(--primary)" : "var(--muted-foreground)",
                 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: isOpen ? "#6FE89B" : "rgba(255,255,255,0.5)" }} />
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: isOpen ? "var(--leaf)" : "var(--muted-foreground)" }} />
                   {isOpen ? "Open" : "Closed"}
                 </span>
               </div>
@@ -224,21 +227,21 @@ export default function MenuPage() {
               {/* Detail pills */}
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 <span style={{
-                  padding: "3px 10px", borderRadius: 6, background: "rgba(255,255,255,0.15)",
-                  color: "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
+                  padding: "3px 10px", borderRadius: 999, background: "var(--card)", border: "1px solid var(--border)",
+                  color: "var(--foreground)", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
                 }}>
                   {restaurant.cuisineLabel}
                 </span>
                 <span style={{
-                  padding: "3px 10px", borderRadius: 6, background: "rgba(255,255,255,0.15)",
-                  color: "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
+                  padding: "3px 10px", borderRadius: 999, background: "var(--card)", border: "1px solid var(--border)",
+                  color: "var(--foreground)", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
                 }}>
                   📍 {formatDistance(restaurant.distance)}
                 </span>
                 {restaurant.phone && (
                   <a href={`tel:${restaurant.phone}`} onClick={(e) => e.stopPropagation()} style={{
-                    padding: "3px 10px", borderRadius: 6, background: "rgba(255,255,255,0.15)",
-                    color: "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
+                    padding: "3px 10px", borderRadius: 999, background: "var(--card)", border: "1px solid var(--border)",
+                    color: "var(--foreground)", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
                     textDecoration: "none",
                   }}>
                     📞 {restaurant.phone}
@@ -246,8 +249,8 @@ export default function MenuPage() {
                 )}
                 {restaurant.website && (
                   <a href={restaurant.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{
-                    padding: "3px 10px", borderRadius: 6, background: "rgba(255,255,255,0.15)",
-                    color: "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
+                    padding: "3px 10px", borderRadius: 999, background: "var(--card)", border: "1px solid var(--border)",
+                    color: "var(--foreground)", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
                     textDecoration: "none",
                   }}>
                     🌐 Website
@@ -255,8 +258,8 @@ export default function MenuPage() {
                 )}
                 {restaurant.lat && (
                   <a href={`https://www.google.com/maps/dir/?api=1&destination=${restaurant.lat},${restaurant.lon}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{
-                    padding: "3px 10px", borderRadius: 6, background: "rgba(255,255,255,0.15)",
-                    color: "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
+                    padding: "3px 10px", borderRadius: 999, background: "var(--card)", border: "1px solid var(--border)",
+                    color: "var(--foreground)", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
                     textDecoration: "none",
                   }}>
                     🗺️ Directions

@@ -90,22 +90,23 @@ export default function AnalysisPage() {
 
   return (
     <div style={{ paddingBottom: 60 }}>
-      {/* ── RED HEADER BANNER ── */}
+      {/* ── ORGANIC HEADER BANNER ── */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         style={{
-          background: "linear-gradient(135deg, var(--red) 0%, #B5101F 100%)",
+          background: "var(--gradient-hero)",
           padding: "28px 16px 24px",
           marginTop: -8,
           position: "relative",
           overflow: "hidden",
+          borderBottom: "1px solid var(--border)",
         }}
       >
         <div style={{
           position: "absolute", inset: 0,
-          background: "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 60%)",
+          background: "radial-gradient(circle at 85% 15%, oklch(0.92 0.07 65 / 0.45) 0%, transparent 55%)",
           pointerEvents: "none",
         }} />
 
@@ -114,22 +115,24 @@ export default function AnalysisPage() {
             whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={spring.snappy}
             onClick={() => navigate(-1)}
             style={{
-              background: "rgba(255,255,255,0.15)", border: "none", color: "#fff",
+              background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)",
               cursor: "pointer", fontFamily: "var(--font-body)", fontSize: 12,
-              fontWeight: 600, padding: "5px 12px", borderRadius: 8, marginBottom: 14,
+              fontWeight: 600, padding: "5px 12px", borderRadius: 999, marginBottom: 14,
+              boxShadow: "var(--shadow-soft)",
             }}>
             ← Back to Menu
           </motion.button>
 
           <h1 style={{
-            fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700,
-            color: "#fff", marginBottom: 6,
+            fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 500,
+            letterSpacing: -0.5,
+            color: "var(--foreground)", marginBottom: 6,
           }}>
-            Meal Analysis
+            Meal <span style={{ fontStyle: "italic", color: "var(--primary)" }}>analysis</span>
           </h1>
           <p style={{
             fontFamily: "var(--font-body)", fontSize: 13,
-            color: "rgba(255,255,255,0.7)",
+            color: "var(--muted-foreground)",
           }}>
             {selectedItems.length} item{selectedItems.length !== 1 ? "s" : ""} · {totals.cal} total calories
           </p>
@@ -137,24 +140,26 @@ export default function AnalysisPage() {
           {/* Macro summary in hero */}
           <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
             {[
-              { label: "Calories", value: totals.cal, unit: "", color: "var(--gold)" },
-              { label: "Protein", value: totals.protein, unit: "g", color: "var(--green)" },
-              { label: "Carbs", value: totals.carbs, unit: "g", color: "var(--cream-dim)" },
-              { label: "Fat", value: totals.fat, unit: "g", color: "var(--orange)" },
+              { label: "Calories", value: totals.cal, unit: "", color: "var(--accent-foreground)" },
+              { label: "Protein", value: totals.protein, unit: "g", color: "var(--primary)" },
+              { label: "Carbs", value: totals.carbs, unit: "g", color: "var(--bark)" },
+              { label: "Fat", value: totals.fat, unit: "g", color: "var(--tomato)" },
             ].map(({ label, value, unit, color }) => (
               <div key={label} style={{
-                background: "var(--surface)",
-                borderRadius: 10, padding: "10px 16px",
+                background: "var(--card)",
+                border: "1px solid var(--border)",
+                borderRadius: 14, padding: "10px 16px",
                 flex: "1 1 0", minWidth: 80,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                boxShadow: "var(--shadow-soft)",
               }}>
                 <div style={{
-                  fontFamily: "var(--font-body)", fontSize: 20, fontWeight: 700, color,
+                  fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 500, color,
+                  letterSpacing: -0.5,
                 }}>
                   {value}{unit}
                 </div>
                 <div style={{
-                  fontFamily: "var(--font-body)", fontSize: 11, color: "var(--muted)",
+                  fontFamily: "var(--font-body)", fontSize: 11, color: "var(--muted-foreground)",
                   fontWeight: 600, marginTop: 2,
                 }}>
                   {label}

@@ -2,25 +2,132 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * NUTRÏQ — Fresh & Organic design system
+ * Warm cream backgrounds, deep botanical greens, soft apricot/tomato accents.
+ * All colors authored in oklch; semantic tokens only.
+ */
+
 :root {
-  --red: #D91429;
-  --red-glow: rgba(217, 20, 41, 0.12);
-  --gold: #C99400;
-  --gold-dim: rgba(201, 148, 0, 0.1);
-  --orange: #E8581F;
-  --orange-dim: rgba(232, 88, 31, 0.1);
-  --green: #1BA34D;
-  --green-dim: rgba(27, 163, 77, 0.08);
-  --charcoal: #FAFAF8;
-  --surface: #FFFFFF;
-  --surface2: #F5F4F1;
-  --surface3: #ECEAE6;
-  --border: rgba(0, 0, 0, 0.08);
-  --cream: #1A1A1A;
-  --cream-dim: rgba(26, 26, 26, 0.55);
-  --muted: rgba(26, 26, 26, 0.3);
-  --font-display: "Playfair Display", serif;
-  --font-body: "Plus Jakarta Sans", sans-serif;
+  --radius: 0.875rem;
+
+  /* Surfaces */
+  --background:        oklch(0.985 0.012 95);
+  --foreground:        oklch(0.245 0.035 145);
+  --card:              oklch(0.995 0.008 95);
+  --card-foreground:   oklch(0.245 0.035 145);
+  --popover:           oklch(0.995 0.008 95);
+  --popover-foreground: oklch(0.245 0.035 145);
+
+  /* Botanical green — primary brand */
+  --primary:           oklch(0.45 0.105 150);
+  --primary-foreground: oklch(0.985 0.012 95);
+  --primary-soft:      oklch(0.92 0.055 145);
+  --leaf:              oklch(0.62 0.13 145);
+
+  /* Earth */
+  --cream:             oklch(0.97 0.018 92);
+  --bark:              oklch(0.32 0.04 70);
+
+  /* Soft apricot accent */
+  --accent:            oklch(0.88 0.075 65);
+  --accent-foreground: oklch(0.32 0.06 50);
+
+  /* Tomato — warm callouts / urgency */
+  --tomato:            oklch(0.66 0.16 35);
+  --tomato-foreground: oklch(0.99 0.012 95);
+
+  /* Neutrals */
+  --secondary:         oklch(0.94 0.025 92);
+  --secondary-foreground: oklch(0.3 0.04 145);
+  --muted:             oklch(0.94 0.018 92);
+  --muted-foreground:  oklch(0.5 0.022 130);
+
+  --destructive:       oklch(0.58 0.205 27);
+  --destructive-foreground: oklch(0.99 0.012 95);
+
+  --border:            oklch(0.9 0.018 95);
+  --input:             oklch(0.9 0.018 95);
+  --ring:              oklch(0.55 0.1 145);
+
+  /* Charts */
+  --chart-1: oklch(0.62 0.13 145);
+  --chart-2: oklch(0.7 0.13 70);
+  --chart-3: oklch(0.66 0.16 35);
+  --chart-4: oklch(0.55 0.09 200);
+  --chart-5: oklch(0.45 0.105 150);
+
+  /* Gradients */
+  --gradient-hero:
+    radial-gradient(120% 80% at 0% 0%, oklch(0.93 0.06 130) 0%, transparent 55%),
+    radial-gradient(120% 80% at 100% 0%, oklch(0.92 0.07 65) 0%, transparent 50%),
+    linear-gradient(180deg, oklch(0.985 0.012 95) 0%, oklch(0.96 0.02 92) 100%);
+  --gradient-leaf: linear-gradient(135deg, oklch(0.62 0.13 145) 0%, oklch(0.45 0.105 150) 100%);
+  --gradient-warm: linear-gradient(135deg, oklch(0.88 0.075 65) 0%, oklch(0.78 0.13 50) 100%);
+
+  /* Shadows */
+  --shadow-soft:     0 1px 2px oklch(0.3 0.05 145 / 0.04), 0 8px 24px -12px oklch(0.3 0.05 145 / 0.12);
+  --shadow-elevated: 0 2px 4px oklch(0.3 0.05 145 / 0.06), 0 18px 40px -16px oklch(0.3 0.05 145 / 0.18);
+  --shadow-glow:     0 0 0 6px oklch(0.62 0.13 145 / 0.12);
+
+  --transition-smooth: 400ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Typography */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body:    "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Legacy aliases — kept so existing var() references keep working
+     during the visual port. New components use semantic tokens above. */
+  --red:        var(--tomato);
+  --red-glow:   oklch(0.66 0.16 35 / 0.12);
+  --gold:       oklch(0.7 0.13 70);
+  --gold-dim:   oklch(0.7 0.13 70 / 0.1);
+  --orange:     var(--accent);
+  --orange-dim: oklch(0.88 0.075 65 / 0.1);
+  --green:      var(--leaf);
+  --green-dim:  oklch(0.62 0.13 145 / 0.08);
+  --charcoal:   var(--background);
+  --surface:    var(--card);
+  --surface2:   var(--secondary);
+  --surface3:   var(--muted);
+  --cream-dim:  oklch(0.245 0.035 145 / 0.55);
+}
+
+.dark {
+  --background:        oklch(0.18 0.02 145);
+  --foreground:        oklch(0.96 0.018 92);
+  --card:              oklch(0.22 0.025 145);
+  --card-foreground:   oklch(0.96 0.018 92);
+  --popover:           oklch(0.22 0.025 145);
+  --popover-foreground: oklch(0.96 0.018 92);
+
+  --primary:           oklch(0.72 0.13 145);
+  --primary-foreground: oklch(0.18 0.02 145);
+  --primary-soft:      oklch(0.32 0.07 145);
+  --leaf:              oklch(0.72 0.13 145);
+
+  --cream:             oklch(0.22 0.025 145);
+  --bark:              oklch(0.78 0.04 70);
+
+  --accent:            oklch(0.4 0.08 60);
+  --accent-foreground: oklch(0.96 0.018 92);
+
+  --tomato:            oklch(0.7 0.16 35);
+  --tomato-foreground: oklch(0.18 0.02 145);
+
+  --secondary:         oklch(0.26 0.03 145);
+  --secondary-foreground: oklch(0.96 0.018 92);
+  --muted:             oklch(0.26 0.03 145);
+  --muted-foreground:  oklch(0.72 0.025 130);
+
+  --destructive:       oklch(0.7 0.19 22);
+  --destructive-foreground: oklch(0.18 0.02 145);
+
+  --border:            oklch(1 0 0 / 10%);
+  --input:             oklch(1 0 0 / 14%);
+  --ring:              oklch(0.72 0.13 145);
+
+  --cream-dim:         oklch(0.96 0.018 92 / 0.55);
 }
 
 * {
@@ -29,17 +136,33 @@
   box-sizing: border-box;
 }
 
-body {
-  background: var(--charcoal);
-  color: var(--cream);
+html {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  background-image:
+    radial-gradient(1200px 600px at 90% -10%, oklch(0.92 0.07 65 / 0.55), transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, oklch(0.92 0.075 145 / 0.5), transparent 60%);
+  background-attachment: fixed;
   min-height: 100vh;
+}
+
+.dark body {
+  background-image:
+    radial-gradient(1200px 600px at 90% -10%, oklch(0.4 0.08 60 / 0.4), transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, oklch(0.32 0.07 145 / 0.55), transparent 60%);
 }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
 }
 
 ::-webkit-scrollbar {
@@ -47,17 +170,17 @@ h1, h2, h3, h4 {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--charcoal);
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--surface3);
+  background: var(--border);
   border-radius: 3px;
 }
 
 ::selection {
-  background: var(--red-glow);
-  color: var(--red);
+  background: oklch(0.62 0.13 145 / 0.18);
+  color: var(--primary);
 }
 
 /* Shimmer effect for skeleton loaders */
@@ -69,9 +192,9 @@ h1, h2, h3, h4 {
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(0,0,0,0.04) 25%,
-    rgba(0,0,0,0.08) 50%,
-    rgba(0,0,0,0.04) 75%
+    oklch(0.245 0.035 145 / 0.04) 25%,
+    oklch(0.245 0.035 145 / 0.08) 50%,
+    oklch(0.245 0.035 145 / 0.04) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite ease-in-out;
@@ -79,7 +202,7 @@ h1, h2, h3, h4 {
 
 /* Focus styles */
 *:focus-visible {
-  outline: 2px solid var(--red);
+  outline: 2px solid var(--ring);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -100,3 +223,26 @@ button:focus-visible {
 [style*="overflow-x: auto"]::-webkit-scrollbar {
   display: none;
 }
+
+/* --- Decorative animations from redo-glow --- */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-12px) rotate(2deg); }
+}
+.animate-float-slow { animation: float-slow 9s ease-in-out infinite; }
+
+@keyframes pin-drop {
+  0%   { transform: translateY(-30px) scale(0.9); opacity: 0; }
+  60%  { transform: translateY(4px) scale(1.05); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.animate-pin-drop { animation: pin-drop 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Utility shorthands the new components use */
+.bg-hero          { background-image: var(--gradient-hero); }
+.bg-leaf-gradient { background-image: var(--gradient-leaf); }
+.bg-warm-gradient { background-image: var(--gradient-warm); }
+.shadow-soft      { box-shadow: var(--shadow-soft); }
+.shadow-elevated  { box-shadow: var(--shadow-elevated); }
+.shadow-glow      { box-shadow: var(--shadow-glow); }
+.transition-smooth { transition: all var(--transition-smooth); }

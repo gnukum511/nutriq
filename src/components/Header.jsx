@@ -46,8 +46,11 @@ export default function Header({ onMenuToggle, theme, onThemeToggle, user, onSig
         position: "sticky",
         top: 0,
         zIndex: 100,
-        background: theme === "dark" ? "rgba(14,14,15,0.92)" : "rgba(250,250,248,0.92)",
-        backdropFilter: "blur(12px)",
+        background: theme === "dark"
+          ? "color-mix(in oklch, var(--background) 86%, transparent)"
+          : "color-mix(in oklch, var(--background) 78%, transparent)",
+        backdropFilter: "blur(14px) saturate(140%)",
+        WebkitBackdropFilter: "blur(14px) saturate(140%)",
         borderBottom: "1px solid var(--border)",
         padding: "0 16px",
       }}
@@ -94,7 +97,7 @@ export default function Header({ onMenuToggle, theme, onThemeToggle, user, onSig
               letterSpacing: -0.5,
             }}
           >
-            NUTR<span style={{ color: "var(--red)" }}>Ï</span>Q
+            NUTR<span style={{ color: "var(--primary)", fontStyle: "italic" }}>Ï</span>Q
           </motion.span>
         </div>
 
@@ -135,9 +138,9 @@ export default function Header({ onMenuToggle, theme, onThemeToggle, user, onSig
             <span style={{
               display: "inline-flex", alignItems: "center", gap: 3,
               padding: "3px 8px", borderRadius: 6,
-              background: "linear-gradient(135deg, #FFD700, #FFA500)",
+              background: "var(--gradient-warm)",
               fontSize: 10, fontWeight: 700, fontFamily: "var(--font-body)",
-              color: "#1A1A1A",
+              color: "var(--accent-foreground)",
             }}>
               <Zap size={10} strokeWidth={2.5} />
               PRO
@@ -234,13 +237,13 @@ export default function Header({ onMenuToggle, theme, onThemeToggle, user, onSig
                   width: 26,
                   height: 26,
                   borderRadius: "50%",
-                  background: "var(--red)",
+                  background: "var(--gradient-leaf)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: 13,
                   fontWeight: 700,
-                  color: "#fff",
+                  color: "var(--primary-foreground)",
                   fontFamily: "var(--font-body)",
                 }}
               >

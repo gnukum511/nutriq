@@ -61,22 +61,23 @@ export default function SettingsPage() {
 
   return (
     <div style={{ paddingBottom: 60 }}>
-      {/* ── RED HEADER ── */}
+      {/* ── ORGANIC HEADER ── */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         style={{
-          background: "linear-gradient(135deg, var(--red) 0%, #B5101F 100%)",
+          background: "var(--gradient-hero)",
           padding: "28px 16px 24px",
           marginTop: -8,
           position: "relative",
           overflow: "hidden",
+          borderBottom: "1px solid var(--border)",
         }}
       >
         <div style={{
           position: "absolute", inset: 0,
-          background: "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 60%)",
+          background: "radial-gradient(circle at 85% 15%, oklch(0.92 0.07 65 / 0.45) 0%, transparent 55%)",
           pointerEvents: "none",
         }} />
         <div style={{ maxWidth: 680, margin: "0 auto", position: "relative" }}>
@@ -84,20 +85,22 @@ export default function SettingsPage() {
             whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={spring.snappy}
             onClick={() => navigate(-1)}
             style={{
-              background: "rgba(255,255,255,0.15)", border: "none", color: "#fff",
+              background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)",
               cursor: "pointer", fontFamily: "var(--font-body)", fontSize: 12,
-              fontWeight: 600, padding: "5px 12px", borderRadius: 8, marginBottom: 14,
+              fontWeight: 600, padding: "5px 12px", borderRadius: 999, marginBottom: 14,
+              boxShadow: "var(--shadow-soft)",
             }}>
             ← Back
           </motion.button>
           <h1 style={{
-            fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700,
-            color: "#fff", marginBottom: 4,
+            fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 500,
+            letterSpacing: -0.5,
+            color: "var(--foreground)", marginBottom: 4,
           }}>
-            Settings
+            <span style={{ fontStyle: "italic", color: "var(--primary)" }}>Settings</span>
           </h1>
           <p style={{
-            fontFamily: "var(--font-body)", fontSize: 13, color: "rgba(255,255,255,0.7)",
+            fontFamily: "var(--font-body)", fontSize: 13, color: "var(--muted-foreground)",
           }}>
             Diet regimen & daily nutrition targets
           </p>
@@ -137,21 +140,22 @@ export default function SettingsPage() {
                     onClick={() => handleSelectDiet(diet.id)}
                     style={{
                       padding: "12px 10px",
-                      borderRadius: 10,
-                      border: `1.5px solid ${isActive ? "var(--red)" : "var(--border)"}`,
-                      background: isActive ? "var(--red-glow)" : "var(--surface)",
+                      borderRadius: 14,
+                      border: `1.5px solid ${isActive ? "var(--primary)" : "var(--border)"}`,
+                      background: isActive ? "var(--primary-soft)" : "var(--card)",
                       cursor: "pointer",
                       textAlign: "left",
                       display: "flex",
                       flexDirection: "column",
                       gap: 4,
+                      boxShadow: isActive ? "var(--shadow-soft)" : "none",
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <span style={{
-                        width: 24, height: 24, borderRadius: 6,
-                        background: isActive ? "var(--red)" : "var(--surface2)",
-                        color: isActive ? "#fff" : "var(--cream-dim)",
+                        width: 24, height: 24, borderRadius: 8,
+                        background: isActive ? "var(--primary)" : "var(--secondary)",
+                        color: isActive ? "var(--primary-foreground)" : "var(--muted-foreground)",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: 11, fontWeight: 700, fontFamily: "var(--font-body)",
                         flexShrink: 0,
@@ -160,7 +164,7 @@ export default function SettingsPage() {
                       </span>
                       <span style={{
                         fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 600,
-                        color: isActive ? "var(--red)" : "var(--cream)",
+                        color: isActive ? "var(--primary)" : "var(--foreground)",
                       }}>
                         {diet.name}
                       </span>
@@ -202,8 +206,9 @@ export default function SettingsPage() {
               </h3>
               {activeDiet !== "custom" && (
                 <span style={{
-                  padding: "3px 10px", borderRadius: 6, background: "var(--red-glow)",
-                  color: "var(--red)", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
+                  padding: "3px 10px", borderRadius: 999, background: "var(--primary-soft)",
+                  color: "var(--primary)", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-body)",
+                  border: "1px solid color-mix(in oklch, var(--primary) 22%, transparent)",
                 }}>
                   {DIET_PRESETS.find((d) => d.id === activeDiet)?.name}
                 </span>
@@ -226,7 +231,7 @@ export default function SettingsPage() {
                   min={min} max={max} step={step}
                   value={localGoals[key]}
                   onChange={(e) => setLocalGoals({ ...localGoals, [key]: Number(e.target.value) })}
-                  style={{ width: "100%", accentColor: "var(--red)", cursor: "pointer" }}
+                  style={{ width: "100%", accentColor: "var(--primary)", cursor: "pointer" }}
                 />
               </div>
             ))}
@@ -235,10 +240,12 @@ export default function SettingsPage() {
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={spring.snappy}
               onClick={handleSave}
               style={{
-                width: "100%", padding: "10px 0", borderRadius: 10, border: "none",
-                background: saved ? "var(--green)" : "var(--red)", color: "#fff",
+                width: "100%", padding: "12px 0", borderRadius: 999, border: "none",
+                background: "var(--gradient-leaf)",
+                color: "var(--primary-foreground)",
                 fontSize: 14, fontWeight: 700, fontFamily: "var(--font-body)",
                 cursor: "pointer", marginTop: 4,
+                boxShadow: "var(--shadow-soft)",
               }}>
               {saved ? "✓ Saved" : "Save Goals"}
             </motion.button>

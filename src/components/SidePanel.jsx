@@ -76,7 +76,7 @@ export default function SidePanel({ open, onClose }) {
                     letterSpacing: -0.5,
                   }}
                 >
-                  NUTR<span style={{ color: "var(--red)" }}>Ï</span>Q
+                  NUTR<span style={{ color: "var(--primary)", fontStyle: "italic" }}>Ï</span>Q
                 </span>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
@@ -140,12 +140,12 @@ export default function SidePanel({ open, onClose }) {
                       padding: "10px 12px",
                       borderRadius: 10,
                       border: "none",
-                      background: isActive ? "var(--red-glow)" : "transparent",
+                      background: isActive ? "var(--primary-soft)" : "transparent",
                       cursor: "pointer",
                       fontFamily: "var(--font-body)",
                       fontSize: 14,
                       fontWeight: isActive ? 700 : 500,
-                      color: isActive ? "var(--red)" : "var(--cream)",
+                      color: isActive ? "var(--primary)" : "var(--foreground)",
                       textAlign: "left",
                       marginBottom: 2,
                     }}
@@ -178,8 +178,8 @@ export default function SidePanel({ open, onClose }) {
                 >
                   Today
                 </p>
-                <DailyStat label="Calories" value={getDailyVal("cal")} goal={getGoalVal("cal")} color="var(--gold)" />
-                <DailyStat label="Protein" value={getDailyVal("protein")} goal={getGoalVal("protein")} unit="g" color="var(--green)" />
+                <DailyStat label="Calories" value={getDailyVal("cal")} goal={getGoalVal("cal")} color="var(--accent)" />
+                <DailyStat label="Protein" value={getDailyVal("protein")} goal={getGoalVal("protein")} unit="g" color="var(--leaf)" />
               </div>
             </div>
 

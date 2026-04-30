@@ -40,19 +40,19 @@ function Stars({ rating }) {
         <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="none">
           {type === "full" && (
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-              fill="var(--red)" />
+              fill="var(--accent)" />
           )}
           {type === "half" && (
             <>
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                fill="var(--surface3)" />
+                fill="var(--muted)" />
               <path d="M12 2v15.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                fill="var(--red)" />
+                fill="var(--accent)" />
             </>
           )}
           {type === "empty" && (
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-              fill="var(--surface3)" />
+              fill="var(--muted)" />
           )}
         </svg>
       ))}
@@ -77,20 +77,21 @@ export default function RestaurantCard({ restaurant, index, onClick, isFavorite,
       whileTap="tap"
       onClick={() => onClick(restaurant)}
       style={{
-        background: "var(--surface)",
+        background: "var(--card)",
         border: "1px solid var(--border)",
-        borderRadius: 14,
+        borderRadius: 24,
         cursor: "pointer",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03)",
+        boxShadow: "var(--shadow-soft)",
         overflow: "hidden",
+        transition: "box-shadow var(--transition-smooth)",
       }}
     >
-      {/* Top color band with cuisine emoji */}
+      {/* Top color band */}
       <div
         style={{
-          height: 6,
-          background: `linear-gradient(90deg, var(--red), var(--orange))`,
-          borderRadius: "14px 14px 0 0",
+          height: 4,
+          background: "var(--gradient-leaf)",
+          borderRadius: "24px 24px 0 0",
         }}
       />
 
@@ -105,9 +106,10 @@ export default function RestaurantCard({ restaurant, index, onClick, isFavorite,
             <h3
               style={{
                 fontFamily: "var(--font-display)",
-                fontSize: 15,
-                fontWeight: 700,
-                color: "var(--cream)",
+                fontSize: 17,
+                fontWeight: 500,
+                letterSpacing: -0.3,
+                color: "var(--foreground)",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
@@ -180,13 +182,13 @@ export default function RestaurantCard({ restaurant, index, onClick, isFavorite,
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 4,
-                padding: "3px 8px",
-                borderRadius: 6,
-                background: "var(--surface2)",
+                padding: "3px 10px",
+                borderRadius: 999,
+                background: "var(--secondary)",
                 fontSize: 11,
                 fontWeight: 600,
                 fontFamily: "var(--font-body)",
-                color: "var(--cream-dim)",
+                color: "var(--secondary-foreground)",
               }}
             >
               {restaurant.cuisineLabel}
@@ -198,10 +200,10 @@ export default function RestaurantCard({ restaurant, index, onClick, isFavorite,
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 3,
-                padding: "3px 8px",
-                borderRadius: 6,
-                background: "var(--orange-dim)",
-                color: "var(--orange)",
+                padding: "3px 10px",
+                borderRadius: 999,
+                background: "color-mix(in oklch, var(--accent) 35%, transparent)",
+                color: "var(--accent-foreground)",
                 fontSize: 11,
                 fontWeight: 600,
                 fontFamily: "var(--font-body)",
@@ -216,18 +218,20 @@ export default function RestaurantCard({ restaurant, index, onClick, isFavorite,
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 4,
-                padding: "3px 8px",
-                borderRadius: 6,
-                background: isOpen ? "var(--green-dim)" : "rgba(217,20,41,0.06)",
+                padding: "3px 10px",
+                borderRadius: 999,
+                background: isOpen
+                  ? "color-mix(in oklch, var(--leaf) 18%, transparent)"
+                  : "color-mix(in oklch, var(--tomato) 12%, transparent)",
                 fontSize: 11,
                 fontWeight: 600,
                 fontFamily: "var(--font-body)",
-                color: isOpen ? "var(--green)" : "var(--red)",
+                color: isOpen ? "var(--primary)" : "var(--tomato)",
               }}
             >
               <span style={{
                 width: 6, height: 6, borderRadius: "50%",
-                background: isOpen ? "var(--green)" : "var(--red)",
+                background: isOpen ? "var(--leaf)" : "var(--tomato)",
               }} />
               {isOpen ? "Open" : "Closed"}
             </span>

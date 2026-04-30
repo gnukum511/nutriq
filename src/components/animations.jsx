@@ -178,7 +178,12 @@ export const filterPillVariants = {
  * Animated SVG health score ring — draws stroke from 0 to score on mount.
  */
 export function AnimatedScoreRing({ score, size = 42 }) {
-  const color = score >= 75 ? "#1BA34D" : score >= 50 ? "#C99400" : "#D91429"
+  // Map 0–100 score → letter grade band → semantic token.
+  // ≥75 leaf (A/B), ≥50 accent apricot (C), <50 tomato (D)
+  const color =
+    score >= 75 ? "var(--leaf)" :
+    score >= 50 ? "var(--accent-foreground)" :
+                  "var(--tomato)"
   const r = size / 2 - 4
   const circ = 2 * Math.PI * r
   const targetDash = (score / 100) * circ
@@ -186,7 +191,7 @@ export function AnimatedScoreRing({ score, size = 42 }) {
   return (
     <svg width={size} height={size} style={{ transform: "rotate(-90deg)", flexShrink: 0 }}>
       <circle cx={size/2} cy={size/2} r={r} fill="none"
-        stroke="rgba(0,0,0,0.08)" strokeWidth={3.5} />
+        stroke="var(--muted)" strokeWidth={3.5} />
       <motion.circle
         cx={size/2} cy={size/2} r={r} fill="none"
         stroke={color} strokeWidth={3.5} strokeLinecap="round"
@@ -196,8 +201,9 @@ export function AnimatedScoreRing({ score, size = 42 }) {
       />
       <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle"
         style={{
-          fill: color, fontSize: size * 0.22, fontWeight: 800,
-          fontFamily: "Plus Jakarta Sans, sans-serif",
+          fill: color, fontSize: size * 0.24, fontWeight: 600,
+          fontFamily: "Fraunces, ui-serif, Georgia, serif",
+          letterSpacing: -0.5,
           transform: "rotate(90deg)", transformOrigin: "50% 50%"
         }}>
         {score}
@@ -207,7 +213,7 @@ export function AnimatedScoreRing({ score, size = 42 }) {
 }
 
 // ─── RADAR PING (LOCATING SCREEN) ─────────────────────────────────────────────
-export function RadarPing({ color = "#D91429" }) {
+export function RadarPing({ color = "var(--primary)" }) {
   return (
     <div style={{ position: "relative", width: 72, height: 72 }}>
       {[0, 0.4, 0.8].map(delay => (
