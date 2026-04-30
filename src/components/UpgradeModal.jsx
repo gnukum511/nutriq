@@ -61,43 +61,52 @@ export default function UpgradeModal({ open, onClose, feature, remaining, onChec
               width: "min(420px, calc(100vw - 32px))",
               maxHeight: "85vh",
               overflowY: "auto",
-              background: "var(--surface)",
-              borderRadius: 20,
-              boxShadow: "0 24px 80px rgba(0,0,0,0.2)",
+              background: "var(--card)",
+              borderRadius: 24,
+              boxShadow: "var(--shadow-elevated)",
               zIndex: 501,
+              border: "1px solid var(--border)",
             }}
           >
             {/* Header */}
             <div style={{
-              background: "linear-gradient(135deg, var(--red) 0%, #B5101F 100%)",
+              background: "var(--gradient-leaf)",
               padding: "24px 24px 20px",
-              borderRadius: "20px 20px 0 0",
+              borderRadius: "24px 24px 0 0",
               position: "relative",
+              overflow: "hidden",
             }}>
+              <div style={{
+                position: "absolute", inset: 0,
+                background: "radial-gradient(circle at 85% 15%, oklch(0.92 0.075 65 / 0.4) 0%, transparent 60%)",
+                pointerEvents: "none",
+              }} />
               <motion.button
                 whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} transition={spring.snappy}
                 onClick={onClose}
                 style={{
                   position: "absolute", top: 16, right: 16,
-                  background: "rgba(255,255,255,0.15)", border: "none",
-                  borderRadius: 8, width: 32, height: 32,
+                  background: "rgba(255,255,255,0.18)", border: "none",
+                  borderRadius: 999, width: 32, height: 32,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  cursor: "pointer",
+                  cursor: "pointer", zIndex: 1,
                 }}>
-                <X size={16} color="#fff" strokeWidth={2} />
+                <X size={16} color="var(--primary-foreground)" strokeWidth={2} />
               </motion.button>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                <Zap size={20} color="#FFD700" fill="#FFD700" />
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, position: "relative" }}>
+                <Zap size={20} color="var(--accent)" fill="var(--accent)" />
                 <span style={{
-                  fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 700, color: "#fff",
+                  fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 500,
+                  letterSpacing: -0.3,
+                  color: "var(--primary-foreground)",
                 }}>
-                  Upgrade to Pro
+                  Upgrade to <span style={{ fontStyle: "italic" }}>Pro</span>
                 </span>
               </div>
               <p style={{
-                fontFamily: "var(--font-body)", fontSize: 13, color: "rgba(255,255,255,0.8)",
-                lineHeight: 1.4,
+                fontFamily: "var(--font-body)", fontSize: 13, color: "color-mix(in oklch, var(--primary-foreground) 85%, transparent)",
+                lineHeight: 1.45, position: "relative",
               }}>
                 You've used all {limit} free {featureLabel}{limit > 1 ? "s" : ""} today.
                 Upgrade for unlimited access to all AI features.
@@ -110,23 +119,23 @@ export default function UpgradeModal({ open, onClose, feature, remaining, onChec
                 {PRO_FEATURES.map(({ icon: Icon, label, desc }) => (
                   <div key={label} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                     <div style={{
-                      width: 36, height: 36, borderRadius: 10,
-                      background: "var(--red-glow)",
+                      width: 38, height: 38, borderRadius: 14,
+                      background: "var(--primary-soft)",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       flexShrink: 0,
                     }}>
-                      <Icon size={18} color="var(--red)" strokeWidth={1.5} />
+                      <Icon size={18} color="var(--primary)" strokeWidth={1.5} />
                     </div>
                     <div>
                       <div style={{
                         fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 600,
-                        color: "var(--cream)",
+                        color: "var(--foreground)",
                       }}>
                         {label}
                       </div>
                       <div style={{
                         fontFamily: "var(--font-body)", fontSize: 12,
-                        color: "var(--cream-dim)", marginTop: 1,
+                        color: "var(--muted-foreground)", marginTop: 1,
                       }}>
                         {desc}
                       </div>
@@ -137,7 +146,7 @@ export default function UpgradeModal({ open, onClose, feature, remaining, onChec
 
               {/* Plan toggle */}
               <div style={{
-                display: "flex", background: "var(--surface2)", borderRadius: 10,
+                display: "flex", background: "var(--secondary)", borderRadius: 14,
                 padding: 4, gap: 4, marginBottom: 16,
               }}>
                 {[
@@ -149,11 +158,11 @@ export default function UpgradeModal({ open, onClose, feature, remaining, onChec
                     whileTap={{ scale: 0.97 }} transition={spring.snappy}
                     onClick={() => setPlan(key)}
                     style={{
-                      flex: 1, padding: "8px 0", border: "none", borderRadius: 7, cursor: "pointer",
+                      flex: 1, padding: "8px 0", border: "none", borderRadius: 10, cursor: "pointer",
                       fontFamily: "var(--font-body)", fontSize: 12, fontWeight: 600,
-                      background: plan === key ? "var(--surface)" : "transparent",
-                      color: plan === key ? "var(--cream)" : "var(--cream-dim)",
-                      boxShadow: plan === key ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                      background: plan === key ? "var(--card)" : "transparent",
+                      color: plan === key ? "var(--foreground)" : "var(--muted-foreground)",
+                      boxShadow: plan === key ? "var(--shadow-soft)" : "none",
                     }}
                   >
                     {label}
@@ -164,7 +173,7 @@ export default function UpgradeModal({ open, onClose, feature, remaining, onChec
               {/* Error */}
               {error && (
                 <p style={{
-                  fontFamily: "var(--font-body)", fontSize: 12, color: "var(--red)",
+                  fontFamily: "var(--font-body)", fontSize: 12, color: "var(--tomato)",
                   textAlign: "center", marginBottom: 10,
                 }}>
                   {error}
@@ -179,11 +188,11 @@ export default function UpgradeModal({ open, onClose, feature, remaining, onChec
                 onClick={handleCheckout}
                 disabled={loading}
                 style={{
-                  width: "100%", padding: "14px 0", borderRadius: 12, border: "none",
-                  background: "var(--red)", color: "#fff",
+                  width: "100%", padding: "14px 0", borderRadius: 999, border: "none",
+                  background: "var(--gradient-leaf)", color: "var(--primary-foreground)",
                   fontSize: 15, fontWeight: 700, fontFamily: "var(--font-body)",
                   cursor: loading ? "default" : "pointer",
-                  boxShadow: "0 4px 16px rgba(217,20,41,0.3)",
+                  boxShadow: "var(--shadow-glow)",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                   opacity: loading ? 0.8 : 1,
                 }}>

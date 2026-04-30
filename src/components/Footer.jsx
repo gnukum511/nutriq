@@ -16,7 +16,7 @@ export default function Footer() {
       }}
     >
       <span>
-        NUTR<span style={{ color: "var(--red)" }}>Ï</span>Q — AI-Powered Nutrition Coach
+        NUTR<span style={{ color: "var(--primary)", fontStyle: "italic" }}>Ï</span>Q — Eat out, eat smart.
       </span>
       <span style={{ fontSize: 11 }}>v1.0.0</span>
     </footer>

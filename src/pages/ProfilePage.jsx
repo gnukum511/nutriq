@@ -53,24 +53,25 @@ export default function ProfilePage() {
 
   return (
     <div style={{ paddingBottom: 60 }}>
-      {/* ── RED HEADER ── */}
+      {/* ── ORGANIC HEADER ── */}
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
         style={{
-          background: "linear-gradient(135deg, var(--red) 0%, #B5101F 100%)",
+          background: "var(--gradient-hero)",
           padding: "28px 16px 24px", marginTop: -8, position: "relative", overflow: "hidden",
+          borderBottom: "1px solid var(--border)",
         }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 60%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 85% 15%, oklch(0.92 0.07 65 / 0.45) 0%, transparent 55%)", pointerEvents: "none" }} />
         <div style={{ maxWidth: 680, margin: "0 auto", position: "relative" }}>
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={spring.snappy}
             onClick={() => navigate(-1)}
-            style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: 12, fontWeight: 600, padding: "5px 12px", borderRadius: 8, marginBottom: 14 }}>
+            style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: 12, fontWeight: 600, padding: "5px 12px", borderRadius: 999, marginBottom: 14, boxShadow: "var(--shadow-soft)" }}>
             ← Back
           </motion.button>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: "#fff", marginBottom: 4 }}>
-            Your Profile
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 500, letterSpacing: -0.5, color: "var(--foreground)", marginBottom: 4 }}>
+            Your <span style={{ fontStyle: "italic", color: "var(--primary)" }}>profile</span>
           </h1>
-          <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--muted-foreground)" }}>
             Body stats for personalized macro calculations
           </p>
         </div>

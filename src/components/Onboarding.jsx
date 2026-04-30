@@ -112,7 +112,7 @@ export default function Onboarding({ onComplete }) {
           letterSpacing: -0.5,
         }}
       >
-        NUTR<span style={{ color: "var(--red)" }}>Ï</span>Q
+        NUTR<span style={{ color: "var(--primary)", fontStyle: "italic" }}>Ï</span>Q
       </motion.p>
 
       {/* Slide content */}
@@ -184,7 +184,7 @@ export default function Onboarding({ onComplete }) {
             key={i}
             animate={{
               width: i === current ? 24 : 8,
-              background: i === current ? "var(--red)" : "var(--border)",
+              background: i === current ? "var(--primary)" : "var(--border)",
             }}
             transition={{ duration: 0.2 }}
             style={{
@@ -232,15 +232,15 @@ export default function Onboarding({ onComplete }) {
           style={{
             flex: current > 0 ? 1 : "1 1 100%",
             padding: "12px 0",
-            borderRadius: 12,
+            borderRadius: 999,
             border: "none",
-            background: "var(--red)",
-            color: "#fff",
+            background: "var(--gradient-leaf)",
+            color: "var(--primary-foreground)",
             fontSize: 14,
             fontWeight: 700,
             fontFamily: "var(--font-body)",
             cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(217,20,41,0.15)",
+            boxShadow: "var(--shadow-glow)",
           }}
         >
           {isLast ? "Get Started" : "Next"}

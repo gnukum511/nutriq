@@ -12,21 +12,27 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 })
 
-// Custom red marker for user location
+// Botanical-green marker for user location
 const userIcon = new L.DivIcon({
   className: "",
-  html: `<div style="width:14px;height:14px;background:#D91429;border:3px solid #fff;border-radius:50%;box-shadow:0 0 8px rgba(217,20,41,0.4)"></div>`,
+  html: `<div style="width:14px;height:14px;background:#2F6F3D;border:3px solid #fff;border-radius:50%;box-shadow:0 0 10px rgba(47,111,61,0.45)"></div>`,
   iconSize: [14, 14],
   iconAnchor: [7, 7],
 })
 
-// Custom pin drop marker for restaurants
+// Pin-drop marker for restaurants — leaf gradient
 const restaurantIcon = new L.DivIcon({
   className: "",
   html: `<svg width="28" height="36" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.27 21.73 0 14 0z" fill="#D91429"/>
+    <defs>
+      <linearGradient id="pinGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#4DA871"/>
+        <stop offset="100%" stop-color="#2F6F3D"/>
+      </linearGradient>
+    </defs>
+    <path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.27 21.73 0 14 0z" fill="url(#pinGrad)"/>
     <circle cx="14" cy="13" r="6" fill="#fff"/>
-    <text x="14" y="16" text-anchor="middle" font-size="10" fill="#D91429">🍽</text>
+    <text x="14" y="16" text-anchor="middle" font-size="10" fill="#2F6F3D">🍽</text>
   </svg>`,
   iconSize: [28, 36],
   iconAnchor: [14, 36],

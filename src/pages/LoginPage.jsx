@@ -80,7 +80,7 @@ export default function LoginPage({ onAuth, signIn, signUp }) {
               letterSpacing: -1,
             }}
           >
-            NUTR<span style={{ color: "var(--red)" }}>Ï</span>Q
+            NUTR<span style={{ color: "var(--primary)", fontStyle: "italic" }}>Ï</span>Q
           </motion.h1>
           <p
             style={{
@@ -244,14 +244,15 @@ export default function LoginPage({ onAuth, signIn, signUp }) {
               width: "100%",
               padding: "14px 0",
               border: "none",
-              borderRadius: 12,
-              background: "var(--red)",
-              color: "#fff",
+              borderRadius: 999,
+              background: "var(--gradient-leaf)",
+              color: "var(--primary-foreground)",
               fontFamily: "var(--font-body)",
               fontSize: 15,
               fontWeight: 700,
               cursor: "pointer",
               letterSpacing: 0.3,
+              boxShadow: "var(--shadow-glow)",
             }}
           >
             {mode === "signin" ? "Sign In" : "Create Account"}
@@ -277,7 +278,7 @@ export default function LoginPage({ onAuth, signIn, signUp }) {
             style={{
               background: "none",
               border: "none",
-              color: "var(--red)",
+              color: "var(--primary)",
               fontWeight: 700,
               cursor: "pointer",
               fontFamily: "var(--font-body)",
