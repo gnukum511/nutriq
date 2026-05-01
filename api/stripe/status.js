@@ -10,9 +10,9 @@
  *   { isPro: false, customerId: "cus_xxx" }
  *   { error: "...", status: 400|500 }
  *
- * Required env vars:
- *   UPSTASH_REDIS_REST_URL
- *   UPSTASH_REDIS_REST_TOKEN
+ * Required env vars (auto-injected by Vercel Marketplace Upstash integration):
+ *   KV_REST_API_URL
+ *   KV_REST_API_TOKEN
  */
 
 import { Redis } from "@upstash/redis"
@@ -38,8 +38,8 @@ export default async function handler(req) {
     return new Response(JSON.stringify({ error: "Missing customer_id" }), { status: 400, headers: CORS })
   }
 
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  const url = process.env.KV_REST_API_URL
+  const token = process.env.KV_REST_API_TOKEN
   if (!url || !token) {
     return new Response(
       JSON.stringify({ error: "Redis not configured" }),

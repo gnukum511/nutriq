@@ -5,9 +5,9 @@
  *
  * KV key structure: pro:{customerId} → "true"
  *
- * Required env vars (set in Vercel dashboard, injected by Upstash integration):
- *   UPSTASH_REDIS_REST_URL
- *   UPSTASH_REDIS_REST_TOKEN
+ * Required env vars (auto-injected by Vercel Marketplace Upstash integration):
+ *   KV_REST_API_URL
+ *   KV_REST_API_TOKEN
  *   STRIPE_WEBHOOK_SECRET
  */
 
@@ -20,8 +20,8 @@ export const config = { runtime: "edge" }
 // ---------------------------------------------------------------------------
 
 function getRedis() {
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  const url = process.env.KV_REST_API_URL
+  const token = process.env.KV_REST_API_TOKEN
   if (!url || !token) throw new Error("Upstash Redis env vars not configured")
   return new Redis({ url, token })
 }
