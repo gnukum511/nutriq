@@ -107,7 +107,7 @@ export default function ProfilePage() {
             {/* Age */}
             <FieldRow label="Age" value={`${age} years`}>
               <input type="range" min={13} max={80} value={age} onChange={(e) => setAge(Number(e.target.value))}
-                style={{ width: "100%", accentColor: "var(--red)", cursor: "pointer" }} />
+                style={{ width: "100%", accentColor: "var(--primary)", cursor: "pointer" }} />
             </FieldRow>
 
             {/* Height */}
@@ -128,7 +128,7 @@ export default function ProfilePage() {
             <FieldRow label="Weight" value={`${weightLbs} lbs`}>
               <input type="range" min={80} max={400} step={1} value={weightLbs}
                 onChange={(e) => setWeightLbs(Number(e.target.value))}
-                style={{ width: "100%", accentColor: "var(--red)", cursor: "pointer" }} />
+                style={{ width: "100%", accentColor: "var(--primary)", cursor: "pointer" }} />
             </FieldRow>
           </div>
         </ScrollReveal>
@@ -194,10 +194,12 @@ export default function ProfilePage() {
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={spring.snappy}
               onClick={handleSave}
               style={{
-                width: "100%", padding: "12px 0", borderRadius: 10, border: "none",
-                background: saved ? "var(--green)" : "var(--red)", color: "#fff",
+                width: "100%", padding: "14px 0", borderRadius: 999, border: "none",
+                background: "var(--gradient-leaf)",
+                color: "var(--primary-foreground)",
                 fontSize: 14, fontWeight: 700, fontFamily: "var(--font-body)",
                 cursor: "pointer", marginTop: 16,
+                boxShadow: "var(--shadow-glow)",
               }}>
               {saved ? "✓ Saved & Applied" : "Apply These Targets"}
             </motion.button>
@@ -241,11 +243,12 @@ function ToggleButton({ active, onClick, children }) {
       onClick={onClick}
       style={{
         flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-        padding: "12px 16px", borderRadius: 10,
-        border: `1.5px solid ${active ? "var(--red)" : "var(--border)"}`,
-        background: active ? "var(--red)" : "var(--surface)",
-        color: active ? "#fff" : "var(--cream-dim)",
+        padding: "12px 16px", borderRadius: 14,
+        border: active ? "none" : "1px solid var(--border)",
+        background: active ? "var(--gradient-leaf)" : "var(--card)",
+        color: active ? "var(--primary-foreground)" : "var(--muted-foreground)",
         fontSize: 14, fontWeight: 600, fontFamily: "var(--font-body)", cursor: "pointer",
+        boxShadow: active ? "var(--shadow-glow)" : "none",
       }}>
       {children}
     </motion.button>
@@ -255,29 +258,29 @@ function ToggleButton({ active, onClick, children }) {
 function OptionRow({ active, onClick, label, desc }) {
   return (
     <motion.button
-      whileHover={{ background: active ? "var(--red-glow)" : "var(--surface2)" }}
+      whileHover={{ background: active ? "var(--primary-soft)" : "var(--secondary)" }}
       whileTap={{ scale: 0.98 }} transition={spring.snappy}
       onClick={onClick}
       style={{
         width: "100%", display: "flex", alignItems: "center", gap: 10,
-        padding: "10px 12px", borderRadius: 10,
-        border: `1.5px solid ${active ? "var(--red)" : "var(--border)"}`,
-        background: active ? "var(--red-glow)" : "transparent",
+        padding: "10px 12px", borderRadius: 14,
+        border: `1.5px solid ${active ? "var(--primary)" : "var(--border)"}`,
+        background: active ? "var(--primary-soft)" : "transparent",
         cursor: "pointer", textAlign: "left",
       }}>
       <span style={{
         width: 18, height: 18, borderRadius: "50%",
-        border: `2px solid ${active ? "var(--red)" : "var(--border)"}`,
-        background: active ? "var(--red)" : "transparent",
+        border: `2px solid ${active ? "var(--primary)" : "var(--border)"}`,
+        background: active ? "var(--primary)" : "transparent",
         display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
       }}>
-        {active && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#fff" }} />}
+        {active && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--primary-foreground)" }} />}
       </span>
       <div>
-        <span style={{ fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 600, color: active ? "var(--red)" : "var(--cream)" }}>
+        <span style={{ fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 600, color: active ? "var(--primary)" : "var(--foreground)" }}>
           {label}
         </span>
-        <span style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "var(--cream-dim)", marginLeft: 8 }}>
+        <span style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "var(--muted-foreground)", marginLeft: 8 }}>
           {desc}
         </span>
       </div>

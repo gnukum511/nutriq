@@ -129,7 +129,7 @@ export default function MenuPage() {
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: 14 }}>Restaurant not found</p>
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={spring.snappy} onClick={() => navigate("/")}
-            style={{ marginTop: 12, padding: "8px 20px", borderRadius: 10, border: "none", background: "var(--red)", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+            style={{ marginTop: 12, padding: "10px 22px", borderRadius: 999, border: "none", background: "var(--gradient-leaf)", color: "var(--primary-foreground)", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "var(--shadow-glow)" }}>
             Back to Home
           </motion.button>
         </div>

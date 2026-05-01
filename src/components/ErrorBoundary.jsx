@@ -55,15 +55,16 @@ export default class ErrorBoundary extends Component {
               transition={spring.snappy}
               onClick={() => window.location.reload()}
               style={{
-                padding: "10px 24px",
-                borderRadius: 10,
+                padding: "12px 24px",
+                borderRadius: 999,
                 border: "none",
-                background: "var(--red)",
-                color: "#fff",
+                background: "var(--gradient-leaf)",
+                color: "var(--primary-foreground)",
                 fontSize: 14,
                 fontWeight: 700,
                 fontFamily: "var(--font-body)",
                 cursor: "pointer",
+                boxShadow: "var(--shadow-glow)",
               }}
             >
               Refresh Page
