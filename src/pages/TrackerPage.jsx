@@ -166,9 +166,11 @@ export default function TrackerPage() {
                   whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={spring.snappy}
                   onClick={() => navigate("/")}
                   style={{
-                    marginTop: 10, padding: "8px 20px", borderRadius: 10, border: "none",
-                    background: "var(--red)", color: "#fff", fontSize: 13, fontWeight: 700,
+                    marginTop: 10, padding: "10px 22px", borderRadius: 999, border: "none",
+                    background: "var(--gradient-leaf)", color: "var(--primary-foreground)",
+                    fontSize: 13, fontWeight: 700,
                     fontFamily: "var(--font-body)", cursor: "pointer",
+                    boxShadow: "var(--shadow-glow)",
                   }}>
                   Find Restaurants
                 </motion.button>
@@ -252,15 +254,23 @@ function ActionButton({ onClick, label, desc, primary }) {
       whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} transition={spring.snappy}
       onClick={onClick}
       style={{
-        flex: 1, padding: "12px 10px", borderRadius: 10,
-        border: `1.5px solid ${primary ? "var(--red)" : "var(--border)"}`,
-        background: primary ? "var(--red)" : "var(--surface)",
+        flex: 1, padding: "14px 10px", borderRadius: 14,
+        border: primary ? "none" : "1px solid var(--border)",
+        background: primary ? "var(--gradient-leaf)" : "var(--card)",
         cursor: "pointer", textAlign: "center",
+        boxShadow: primary ? "var(--shadow-glow)" : "var(--shadow-soft)",
       }}>
-      <div style={{ fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 600, color: primary ? "#fff" : "var(--cream)" }}>
+      <div style={{
+        fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 700,
+        color: primary ? "var(--primary-foreground)" : "var(--foreground)",
+      }}>
         {label}
       </div>
-      <div style={{ fontFamily: "var(--font-body)", fontSize: 11, color: primary ? "rgba(255,255,255,0.7)" : "var(--cream-dim)", marginTop: 2 }}>
+      <div style={{
+        fontFamily: "var(--font-body)", fontSize: 11,
+        color: primary ? "color-mix(in oklch, var(--primary-foreground) 80%, transparent)" : "var(--muted-foreground)",
+        marginTop: 2,
+      }}>
         {desc}
       </div>
     </motion.button>

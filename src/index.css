@@ -77,7 +77,10 @@
   --font-body:    "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /* Legacy aliases — kept so existing var() references keep working
-     during the visual port. New components use semantic tokens above. */
+     during the visual port. New components use semantic tokens above.
+     NOTE: --cream and --muted were TEXT colors in the old palette;
+     here we override the surface meaning with text values so existing
+     inline-style refs keep rendering correctly. */
   --red:        var(--tomato);
   --red-glow:   oklch(0.66 0.16 35 / 0.12);
   --gold:       oklch(0.7 0.13 70);
@@ -90,7 +93,9 @@
   --surface:    var(--card);
   --surface2:   var(--secondary);
   --surface3:   var(--muted);
+  --cream:      var(--foreground);                     /* legacy text alias */
   --cream-dim:  oklch(0.245 0.035 145 / 0.55);
+  --muted:      var(--muted-foreground);               /* legacy muted-text alias */
 }
 
 .dark {
@@ -127,7 +132,18 @@
   --input:             oklch(1 0 0 / 14%);
   --ring:              oklch(0.72 0.13 145);
 
-  --cream-dim:         oklch(0.96 0.018 92 / 0.55);
+  /* Legacy text aliases — re-pointed for dark mode */
+  --cream:     var(--foreground);
+  --cream-dim: oklch(0.96 0.018 92 / 0.55);
+  --muted:     var(--muted-foreground);
+
+  /* Dark gradients — deep botanical paper instead of light cream */
+  --gradient-hero:
+    radial-gradient(120% 80% at 0% 0%, oklch(0.32 0.07 145 / 0.6) 0%, transparent 55%),
+    radial-gradient(120% 80% at 100% 0%, oklch(0.4 0.08 60 / 0.5) 0%, transparent 50%),
+    linear-gradient(180deg, oklch(0.18 0.02 145) 0%, oklch(0.22 0.025 145) 100%);
+  --gradient-leaf: linear-gradient(135deg, oklch(0.72 0.13 145) 0%, oklch(0.5 0.105 150) 100%);
+  --gradient-warm: linear-gradient(135deg, oklch(0.4 0.08 60) 0%, oklch(0.5 0.13 50) 100%);
 }
 
 * {
