@@ -4,64 +4,88 @@
 - App name: NUTRÏQ
 - Purpose: Location-based restaurant menu health advisor with AI nutrition coaching
 - Stack: React 18 + Vite, Framer Motion, Tailwind CSS, Leaflet, Lucide React, Anthropic Claude API, Overpass API (OSM)
-- Fonts: Playfair Display (display/headings), Plus Jakarta Sans (body/UI)
+- Fonts: Fraunces (display/headings, italic primary-green accent), Inter (body/UI)
 - Deployed: Vercel at https://nutriq-wine.vercel.app
 - Repo: https://github.com/gnukum511/nutriq
+- Design language: **Fresh & Organic** — warm cream paper, deep botanical green, soft apricot + tomato callouts. All colors authored in `oklch`.
 
 ---
 
-## Color Token System (Light Theme — with Dark Mode toggle)
+## Color Token System (oklch — semantic only)
+
+> Tokens live in `src/index.css`. Tailwind exposes them as semantic class names (`bg-primary`, `text-foreground`, `bg-card`, etc.) plus legacy aliases (`bg-red`, `bg-gold`, `bg-green`) that point to the new palette so older class strings keep rendering during the visual port.
 
 ### Light (default)
 ```
---red:         #D91429
---red-glow:    rgba(217,20,41,0.12)
---gold:        #C99400
---gold-dim:    rgba(201,148,0,0.1)
---orange:      #E8581F
---orange-dim:  rgba(232,88,31,0.1)
---green:       #1BA34D
---green-dim:   rgba(27,163,77,0.08)
---charcoal:    #FAFAF8    /* warm off-white background */
---surface:     #FFFFFF    /* card backgrounds */
---surface2:    #F5F4F1    /* selected/hover states */
---surface3:    #ECEAE6    /* scrollbar, dividers */
---border:      rgba(0,0,0,0.08)
---cream:       #1A1A1A    /* primary text */
---cream-dim:   rgba(26,26,26,0.55)
---muted:       rgba(26,26,26,0.3)
+/* Surfaces */
+--background:        oklch(0.985 0.012 95)   /* warm cream paper */
+--foreground:        oklch(0.245 0.035 145)  /* deep botanical text */
+--card:              oklch(0.995 0.008 95)
+--secondary:         oklch(0.94 0.025 92)
+--muted:             oklch(0.94 0.018 92)
+--muted-foreground:  oklch(0.5 0.022 130)
+--border:            oklch(0.9 0.018 95)
+
+/* Brand */
+--primary:           oklch(0.45 0.105 150)   /* botanical green CTA */
+--primary-soft:      oklch(0.92 0.055 145)   /* selected-state bg */
+--leaf:              oklch(0.62 0.13 145)    /* primary band, OK indicator */
+
+/* Accents */
+--accent:            oklch(0.88 0.075 65)    /* soft apricot — calories, stars */
+--accent-foreground: oklch(0.32 0.06 50)
+--tomato:            oklch(0.66 0.16 35)     /* warm callouts — fat, error, urgency */
+--cream:             oklch(0.97 0.018 92)
+--bark:              oklch(0.32 0.04 70)     /* carbs, secondary text */
 ```
 
-### Dark (toggled via useTheme hook)
+### Dark (toggled via `useTheme` hook → `.dark` class on root)
 ```
---charcoal:    #0E0E0F
---surface:     #161618
---surface2:    #1E1E21
---surface3:    #252528
---border:      rgba(255,255,255,0.07)
---cream:       #F5EDD8
---cream-dim:   rgba(245,237,216,0.55)
---muted:       rgba(245,237,216,0.28)
+--background: oklch(0.18 0.02 145)
+--foreground: oklch(0.96 0.018 92)
+--card:       oklch(0.22 0.025 145)
+--primary:    oklch(0.72 0.13 145)
+--leaf:       oklch(0.72 0.13 145)
+--accent:     oklch(0.4 0.08 60)
+--tomato:     oklch(0.7 0.16 35)
+--border:     oklch(1 0 0 / 10%)
+```
+
+### Gradients & shadows
+```
+--gradient-hero:     radial cream + apricot/leaf glow (used on all page heroes)
+--gradient-leaf:     primary→leaf 135deg (CTAs, brand top stripe, modal headers)
+--gradient-warm:     accent→tomato 135deg (PRO badge, score band)
+--shadow-soft:       cards, pill buttons
+--shadow-elevated:   modals, dropdowns
+--shadow-glow:       primary CTA focus halo
+--transition-smooth: 400ms cubic-bezier(0.22,1,0.36,1)
 ```
 
 **Color rules:**
-- Red = action/urgency ONLY (CTAs, selected states, hero banners)
-- Gold = value/delight (prices, highlights, AI labels, calorie counts)
-- Orange = secondary energy (badges, distance, fat counts)
-- Green = health data ONLY (protein, open status, tracked meals)
-- Cards get subtle box-shadow for depth on light background
+- `primary` / `leaf` (botanical green) = brand mark, primary CTAs, selected states, "Open" indicators, protein
+- `accent` (apricot) = stars, calories, gold-tier callouts (replaces old `--gold`)
+- `tomato` = warm urgency only — fat counts, errors, "Closed" status (replaces old `--red`)
+- `bark` = carb data, neutral secondary text
+- `foreground` for all heading/body text — never `#fff` or `#000` directly
+- All cards use `var(--shadow-soft)` for organic depth on cream background
 
 ---
 
-## UI Design Pattern — Yelp-Inspired
-- **Red gradient hero banners** on all main pages (Home, Menu, Analysis, Settings, Profile, Tracker)
-- **Search-first layout** with embedded search bar in hero
-- **Star ratings + review counts + price tiers** on restaurant cards (pseudo-generated from name)
-- **Open/Closed status** with green/red dot indicators
-- **Cuisine tags + distance badges + delivery links** on each card
+## UI Design Pattern — Fresh & Organic
+- **Cream + radial-gradient orbs** on all main page heroes (Home, Menu, Analysis, Settings, Profile, Tracker) — `var(--gradient-hero)` with apricot/leaf glow
+- **Display headings** in Fraunces, weight 500, letter-spacing -0.5, with **italic primary-green accent word** (e.g. "Eat out. *Eat smart.*", "Daily *tracker*")
+- **Pill-shaped controls** — buttons, pills, badges all use `borderRadius: 999`
+- **`primary-soft` selected states** — restaurant filters, diet presets, side-panel nav
+- **Leaf-gradient CTAs** with `shadow-glow` — Save Goals, Sign In, Analyze Meal, Get Started, Upgrade
+- **Search-first layout** with embedded search in cream hero
+- **Star ratings + review counts + price tiers** on restaurant cards (apricot-fill stars)
+- **Open/Closed status** with leaf/tomato dot indicators
+- **Cuisine tags + distance badges + delivery links** as cream pill chips with subtle border
 - **DoorDash + Uber Eats deep links** on every restaurant
 - **Restaurant logos** via Google favicon service, fallback to Lucide cuisine icons
-- **Consistent red header pattern**: gradient 135deg, var(--red) to #B5101F, radial light overlay
+- **Map pins** in leaf-gradient SVG with cream center
+- **Header chrome** is backdrop-blurred cream (`backdrop-filter: blur(14px) saturate(140%)`) with primary-green brand mark and avatar
 
 ---
 
@@ -157,15 +181,17 @@ public/
 ## Critical Constraints
 - NEVER mock restaurant data — always Overpass API
 - NEVER pre-load menus — generate via Claude API lazily on tap
-- NEVER use CSS transitions — Framer Motion only
-- NEVER use Inter, Roboto, or Arial — Playfair Display + Plus Jakarta Sans only
+- NEVER use CSS transitions for component-level motion — Framer Motion only (the global `.transition-smooth` utility for chrome elevations is fine)
+- NEVER use Playfair Display, Plus Jakarta Sans, Roboto, or Arial — **Fraunces (display) + Inter (body) only**
 - NEVER expose API keys client-side in production — use /api/claude proxy
 - NEVER use emoji icons in UI chrome — use Lucide React (strokeWidth={1.5})
+- NEVER hardcode color hex strings in components — use semantic tokens (`var(--primary)`, `var(--accent)`, `var(--tomato)`, etc.) or Tailwind semantic classes (`bg-primary`, `text-foreground`, `bg-card`)
 - Always include shimmer skeleton loaders while fetching
 - Always handle location denied gracefully
 - Always display distances in miles (formatDistance helper)
-- Score ring colors: green ≥75, gold ≥50, red <50
-- All pages use consistent red gradient hero banner
+- **Score ring colors:** `leaf` ≥75, `accent-foreground` (apricot deep) ≥50, `tomato` <50
+- **All pages use the cream `var(--gradient-hero)` hero banner** with apricot/leaf radial glow
+- Primary CTA buttons use `var(--gradient-leaf)` background + `var(--shadow-glow)`
 
 ---
 
@@ -224,12 +250,13 @@ Claude generates tags per item: keto, gluten-free, paleo, vegan, vegetarian, dai
 ---
 
 ## Active Work
+- **Organic redesign shipped** (17cd176, 2026-04-30) — full visual port from `nutriq-redo-glow`: oklch tokens, Fraunces+Inter fonts, cream/leaf/apricot/tomato palette, restyled hero banners + cards + CTAs. Live at https://nutriq-wine.vercel.app. Backend integrations (Overpass, Claude, Stripe, Upstash) untouched. Reference clone kept at `../nutriq-redo-glow`.
 - **BLOCKED: Upstash Redis not provisioned** — run `vercel integration add upstash/upstash-kv`, accept terms in browser; Vercel injects `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` automatically
 - All Redis code deployed (20f00dd): webhook.js grants/revokes Pro, verify.js writes on checkout, status.js polls on load, useQuota.js re-verifies on mount
 - Preview env vars missing — Vercel CLI plugin blocks adds; must do via Vercel Dashboard → Settings → Environment Variables
 - `useAuth.js` has uncommitted test user seed (`apptest@nutriiq.com` / `password123!`) — intentional for QA
 - Stripe live key rolled 2026-04-05; new key in `.env` and Vercel production
-- **Codebase mapped** (ca1de94, 2026-04-06) — `.planning/codebase/` has STACK, INTEGRATIONS, ARCHITECTURE, STRUCTURE, CONVENTIONS, TESTING, CONCERNS docs
+- **Codebase mapped** (ca1de94, 2026-04-06) — `.planning/codebase/` has STACK, INTEGRATIONS, ARCHITECTURE, STRUCTURE, CONVENTIONS, TESTING, CONCERNS docs (note: STACK doc still describes pre-redesign palette/fonts — refresh on next codebase map)
 
 ## Stripe Integration
 ```
