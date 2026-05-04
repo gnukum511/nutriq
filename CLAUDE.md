@@ -5,7 +5,7 @@
 - Purpose: Location-based restaurant menu health advisor with AI nutrition coaching
 - Stack: React 18 + Vite, Framer Motion, Tailwind CSS, Leaflet, Lucide React, Anthropic Claude API, Overpass API (OSM)
 - Fonts: Fraunces (display/headings, italic primary-green accent), Inter (body/UI)
-- Deployed: Vercel at https://nutriq-wine.vercel.app
+- Deployed: Vercel at https://nutriq-eosin.vercel.app (canonical production URL — `nutriq-wine.vercel.app` is a stale alias, do not use)
 - Repo: https://github.com/gnukum511/nutriq
 - Design language: **Fresh & Organic** — warm cream paper, deep botanical green, soft apricot + tomato callouts. All colors authored in `oklch`.
 
@@ -250,25 +250,26 @@ Claude generates tags per item: keto, gluten-free, paleo, vegan, vegetarian, dai
 ---
 
 ## Active Work
-- **Organic redesign shipped** (17cd176, 2026-04-30) — full visual port from `nutriq-redo-glow`: oklch tokens, Fraunces+Inter fonts, cream/leaf/apricot/tomato palette, restyled hero banners + cards + CTAs. Live at https://nutriq-wine.vercel.app. Backend integrations (Overpass, Claude, Stripe, Upstash) untouched. Reference clone kept at `../nutriq-redo-glow`.
-- **BLOCKED: Upstash Redis not provisioned** — run `vercel integration add upstash/upstash-kv`, accept terms in browser; Vercel injects `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` automatically
-- All Redis code deployed (20f00dd): webhook.js grants/revokes Pro, verify.js writes on checkout, status.js polls on load, useQuota.js re-verifies on mount
+- **Stripe + Upstash Pro flow fully live** (8c5fd0f, 2026-05-01) — Upstash Redis provisioned via Marketplace (`upstash-kv-coffee-school`), env var naming fixed (Marketplace injects `KV_REST_API_URL` / `KV_REST_API_TOKEN`, NOT Upstash-native `UPSTASH_REDIS_REST_*`), webhook repointed from stale `nutriq-wine.vercel.app` to canonical `nutriq-eosin.vercel.app`, enabled events expanded from 1 to 3 (`checkout.session.completed`, `customer.subscription.deleted`, `invoice.payment_failed`). Smoke tests on prod return 200/400 as expected. Server-side Pro state enforcement now works for grants AND revocations.
+- **Organic redesign shipped** (17cd176, 2026-04-30) — full visual port from `nutriq-redo-glow`: oklch tokens, Fraunces+Inter fonts, cream/leaf/apricot/tomato palette, restyled hero banners + cards + CTAs. Reference clone kept at `../nutriq-redo-glow`.
 - Preview env vars missing — Vercel CLI plugin blocks adds; must do via Vercel Dashboard → Settings → Environment Variables
 - `useAuth.js` has uncommitted test user seed (`apptest@nutriiq.com` / `password123!`) — intentional for QA
-- Stripe live key rolled 2026-04-05; new key in `.env` and Vercel production
 - **Codebase mapped** (ca1de94, 2026-04-06) — `.planning/codebase/` has STACK, INTEGRATIONS, ARCHITECTURE, STRUCTURE, CONVENTIONS, TESTING, CONCERNS docs (note: STACK doc still describes pre-redesign palette/fonts — refresh on next codebase map)
 
 ## Stripe Integration
 ```
 api/stripe/
   checkout.js   — POST: creates Checkout Session, returns redirect URL
-  verify.js     — GET: verifies ?session_id= on return from Stripe
-  webhook.js    — POST: receives lifecycle events, verifies HMAC-SHA256
+  verify.js     — GET: verifies ?session_id= on return from Stripe, writes Pro to Redis
+  webhook.js    — POST: receives lifecycle events, verifies HMAC-SHA256, grants/revokes Pro in Redis
+  status.js     — GET ?customer_id= → reads Pro flag from Redis (server-side enforcement)
 ```
-- Success URL: `https://nutriq-wine.vercel.app/?session_id={CHECKOUT_SESSION_ID}`
-- Pro status: verified client-side via /api/stripe/verify → stored in localStorage `nutriq_pro`
+- Success URL: `https://nutriq-eosin.vercel.app/?session_id={CHECKOUT_SESSION_ID}`
+- Pro status: written by verify.js + webhook.js to Redis key `pro:{customerId}` → "true". Re-verified server-side via `/api/stripe/status` on every app load (useQuota.js)
 - Monthly: price_1TIGHZANF8XrNJ2lfkTZFfoA ($4.99/mo) | Annual: price_1TIGHZANF8XrNJ2lAjtI5PEO ($39.99/yr)
-- Webhook ID: we_1TIGHZANF8XrNJ2l8qdaMRJi | Product: prod_UGntPwCQw1fcWm
+- Webhook ID: we_1TIGHZANF8XrNJ2l8qdaMRJi → `https://nutriq-eosin.vercel.app/api/stripe/webhook`
+- Product: prod_UGntPwCQw1fcWm
+- Redis env vars (Marketplace-injected): `KV_REST_API_URL`, `KV_REST_API_TOKEN` (NOT `UPSTASH_REDIS_REST_*`)
 
 ## Custom Skills
 ```
